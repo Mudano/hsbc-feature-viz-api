@@ -21,3 +21,5 @@ npm-packages-offline-cache
 graphql.schema.json
 
 test-data
+
+.vscode

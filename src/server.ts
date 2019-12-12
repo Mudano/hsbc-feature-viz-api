@@ -1,24 +1,24 @@
 // import { ApolloServer, Config, makeExecutableSchema } from 'apollo-server-express'
-import { ApolloServer, Config } from 'apollo-server';
-import { makeExecutableSchema } from 'graphql-tools';
-import { config } from 'dotenv';
-import { rawSchema } from './schema';
-import express from 'express';
+import { ApolloServer, Config } from 'apollo-server'
+import { makeExecutableSchema } from 'graphql-tools'
+import { config } from 'dotenv'
+import { rawSchema } from './schema'
+import express from 'express'
 
 // TODO: change config to remove semicolons
 // TODO: write tests
 // TODO: annotate all functions
 
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const compression = require('compression');
+const cors = require('cors')
+const bodyParser = require('body-parser')
+const compression = require('compression')
 
 function server() {
-  config();
+  config()
 
-  const { PORT } = process.env;
+  const { PORT } = process.env
 
-  const port = PORT || 4000;
+  const port = PORT || 4000
 
   // const app = express()
 
@@ -27,7 +27,7 @@ function server() {
    * version of our GraphQL schema with the resolvers, it matches GraphQL endpoints to functions
    * that return the responses.
    */
-  const schema = makeExecutableSchema(rawSchema);
+  const schema = makeExecutableSchema(rawSchema)
 
   const serverConfig: Config = {
     schema,
@@ -39,9 +39,9 @@ function server() {
         'editor.cursorShape': 'line'
       }
     }
-  };
+  }
 
-  const server: ApolloServer = new ApolloServer(serverConfig);
+  const server: ApolloServer = new ApolloServer(serverConfig)
 
   // app.use(bodyParser)
   // app.use(cors())
@@ -64,9 +64,9 @@ function server() {
   //   console.info(`🚀 GraphQL endpoint ready at http://localhost:${port}${server.graphqlPath}`)
   // }
   server.listen(port).then(({ url }) => {
-    console.info(`🚀 Server ready at ${url}`);
+    console.info(`🚀 Server ready at ${url}`)
     // console.info(`🚀 GraphQL endpoint ready at ${url}${server.graphqlPath}`)
-  });
+  })
 }
 
-export default server;
+export default server

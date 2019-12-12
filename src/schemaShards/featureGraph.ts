@@ -1,5 +1,5 @@
-import { getFeatureGraphs } from '../db';
-import { gql } from 'apollo-server';
+import { getFeatureGraphs } from '../db'
+import { gql } from 'apollo-server'
 
 const typeDefs = gql`
   extend type Query {
@@ -27,7 +27,7 @@ const typeDefs = gql`
     assignee: String
     project: String
   }
-`;
+`
 export default {
   resolvers: {
     Query: {
@@ -35,4 +35,4 @@ export default {
     }
   },
   typeDefs: [typeDefs]
-};
+}

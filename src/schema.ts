@@ -1,6 +1,6 @@
-import { gql } from 'apollo-server';
-import { mergeRawSchemas } from './utils';
-import schemaShards from './schemaShards/featureGraph';
+import { gql } from 'apollo-server'
+import { mergeRawSchemas } from './utils'
+import schemaShards from './schemaShards/featureGraph'
 
 export const rawSchema = mergeRawSchemas(
   {
@@ -15,4 +15,4 @@ export const rawSchema = mergeRawSchemas(
     resolvers: {}
   },
   schemaShards
-);
+)

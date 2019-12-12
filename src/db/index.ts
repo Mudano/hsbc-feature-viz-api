@@ -1,6 +1,5 @@
 import { db } from './config'
-
-type FeatureGraph = {}
+import { FeatureGraph } from '../__generated__/graphql'
 
 /**
  * SQL query joining various tables to construct the FeatureGraph type

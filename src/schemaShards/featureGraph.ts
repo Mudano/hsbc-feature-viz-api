@@ -8,14 +8,18 @@ const typeDefs = gql`
   }
 
   type FeatureGraph {
-    issuekey: String
+    issueKey: String
+    title: String
+    description: String
+    storyPoint: String
+    project: String
     assigneeProjects: AssigneeProjects
-    donStory: Issue
     benStory: Issue
+    # donStory: Issue
   }
 
   type Issue {
-    issuekey: String
+    issueKey: String
     title: String
     description: String
     storyPoint: String

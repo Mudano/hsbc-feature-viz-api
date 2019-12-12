@@ -1,62 +1,45 @@
-import { Pool, PoolConfig } from 'pg'
-// instantiate the PostgreSQL connection pool
-
-require('dotenv')
-
-const pgPromiseConfig: PoolConfig = {
-  // user: process.env["POSTGRES_USER"],
-  // host: process.env["POSTGRES_HOST"],
-  // port: process.env["POSTGRES_DB"],
-  // database: process.env["POSTGRES_PASSWORD"],
-  // password: process.env["POSTGRES_PORT"],
-  user: 'lsalmins',
-  host: 'nonprod-dsol-prototyping-db.ctolc6xouppg.eu-west-1.rds.amazonaws.com',
-  port: 5432,
-  database: 'dev',
-  password: 'k4GL$o4MK#X4x@JR@*m7'
-}
-const pool = new Pool(pgPromiseConfig)
-
-/**
- * pg-prmoise setup
- * adapted from https://github.com/vitaly-t/pg-promise/blob/master/examples/monitor.js
- */
-import promise from 'bluebird' // or any other Promise/A+ compatible library
-import * as monitor from 'pg-monitor'
-
-const initOptions = {
-  promiseLib: promise // overriding the default (ES6 Promise)
-}
-
-const pgp = require('pg-promise')(initOptions)
-
-monitor.attach(initOptions) // attach to all query events
-
-// monitor.setTheme(myTheme); // selecting your own theme;
-monitor.setTheme('invertedMonochrome') // change the default theme
-
-const db = pgp(pgPromiseConfig) // database instance
+import { db } from './config'
 
 type FeatureGraph = {}
 
-// Test DB tables
-// jira_issues
-// jira_assignee_projects
-// jira_dependencies
-// jira_issues_with_dep
-// jira_project_dependencies
-
 const selectAllFeatureGraphSQL = `
   SELECT
-    *
+    ji.issuekey,
+    ji.title,
+    ji.description,
+    ji.storypoint,
+    ji.project,
+    jap. "Assignee",
+    jidon.issuekey AS don_story_issuekey,
+    jidon.title AS don_story_title,
+    jidon.description AS don_story_description,
+    jidon.storypoint AS don_story_storypoint,
+    jidon.project AS don_story_project
   FROM
-    prototyping.jira_issues
-  LIMIT
-    10
+    prototyping.jira_issues_with_dep ji
+    LEFT JOIN prototyping.jira_assignee_projects jap ON jap.project = ji.project
+    LEFT JOIN prototyping.jira_issues_with_dep jidon ON jidon.issuekey = ji.don_story;
 `
 
+const toFeatureGraph = (row: any): FeatureGraph => {
+  return {
+    issueKey: row.issuekey,
+    title: row.title,
+    description: row.description,
+    storyPoint: row.storypoint,
+    project: row.project,
+    benStory: {
+      issueKey: row.don_story_issuekey,
+      title: row.don_story_title,
+      description: row.don_story_description,
+      storyPoint: row.don_story_storypoint,
+      project: row.don_story_project
+    }
+  }
+}
+
 export async function getFeatureGraphs(): Promise<any> {
-  const jiraIssues = await db.any(selectAllFeatureGraphSQL)
-  console.log(jiraIssues)
-  return jiraIssues
+  const rawFeatureGraphs = await db.any(selectAllFeatureGraphSQL)
+  console.log(rawFeatureGraphs.length)
+  return rawFeatureGraphs.map((rfg: any): FeatureGraph => toFeatureGraph(rfg))
 }

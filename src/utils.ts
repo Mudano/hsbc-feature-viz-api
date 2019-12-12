@@ -9,7 +9,11 @@ function withArraysConcatination(objValue: any, srcValue: any) {
   // use the normal lodash merge functionality
 }
 
-// allows us to merge schemas
+/**
+ * Given a list of schemas, join them and return one
+ * SchemaDefinition
+ * @param schemas
+ */
 export const mergeRawSchemas = (
   ...schemas: IExecutableSchemaDefinition[]
 ): IExecutableSchemaDefinition => {

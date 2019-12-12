@@ -2,6 +2,9 @@ import { db } from './config'
 
 type FeatureGraph = {}
 
+/**
+ * SQL query joining various tables to construct the FeatureGraph type
+ */
 const selectAllFeatureGraphSQL = `
   SELECT
     ji.issuekey,
@@ -21,6 +24,11 @@ const selectAllFeatureGraphSQL = `
     LEFT JOIN prototyping.jira_issues_with_dep jidon ON jidon.issuekey = ji.don_story;
 `
 
+/**
+ * Given a row result from a SQL query, return a FeatureGraph object
+ * constructed from that row data
+ * @param row
+ */
 const toFeatureGraph = (row: any): FeatureGraph => {
   return {
     issueKey: row.issuekey,
@@ -38,6 +46,9 @@ const toFeatureGraph = (row: any): FeatureGraph => {
   }
 }
 
+/**
+ * Return a list of FeatureGraph objects
+ */
 export async function getFeatureGraphs(): Promise<any> {
   const rawFeatureGraphs = await db.any(selectAllFeatureGraphSQL)
   console.log(rawFeatureGraphs.length)

@@ -1,14 +1,18 @@
-import { mergeSchemas } from 'apollo-server';
-import resolvers from './resolvers';
-import featureGraph from './featureGraph/featureGraph.schema';
-// export default gql`
+import { gql } from 'apollo-server';
+import { mergeRawSchemas } from './utils';
+import schemaShards from './schemaShards/featureGraph';
 
-// `
-
-const createSchema = async () =>
-  mergeSchemas({
-    schemas: [featureGraph],
-    resolvers
-  });
-
-export default createSchema;
+export const rawSchema = mergeRawSchemas(
+  {
+    typeDefs: [
+      // create empty main types, to be extended in shards
+      gql`
+        type Query {
+          _empty: String
+        }
+      `
+    ],
+    resolvers: {}
+  },
+  schemaShards
+);

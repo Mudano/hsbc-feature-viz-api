@@ -1,80 +1,72 @@
-import { ApolloServer } from 'apollo-server-express';
+// import { ApolloServer, Config, makeExecutableSchema } from 'apollo-server-express'
+import { ApolloServer, Config } from 'apollo-server';
+import { makeExecutableSchema } from 'graphql-tools';
 import { config } from 'dotenv';
-import createSchema from './schema';
-// import schema from './schema'
+import { rawSchema } from './schema';
 import express from 'express';
-// import exportController from './export/exportController';
 
-import DataLoader from 'dataloader';
-// import DataLoader = require('dataloader)
-
-// import { JiraCustomFieldOption } from './__generated__graphql';
-
-// import jiraFeatureEnumerationsLoader from './jira/features/enumerations/jiraFeatureEnumerationsLoader';
+// TODO: change config to remove semicolons
+// TODO: write tests
+// TODO: annotate all functions
 
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const compression = require('compression');
 
-async function server() {
+function server() {
   config();
 
-  const {
-    PORT,
-    NODE_ENV,
-    PROD_GRAPHQL_INTROSPECTION,
-    PROD_GRAPHQL_PLAYGROUND
-    // NODE_EXTRA_CA_CERTS
-  } = process.env;
+  const { PORT } = process.env;
 
   const port = PORT || 4000;
 
-  // const introspection =
-  //   NODE_ENV === 'production' ? PROD_GRAPHQL_INTROSPECTION === 'true' : true;
+  // const app = express()
 
-  // const playground =
-  //   NODE_ENV === 'production' ? PROD_GRAPHQL_PLAYGROUND === 'true' : true;
+  /**
+   * We create a schema with makeExecutableSchema. This executable schema is the optimized
+   * version of our GraphQL schema with the resolvers, it matches GraphQL endpoints to functions
+   * that return the responses.
+   */
+  const schema = makeExecutableSchema(rawSchema);
 
-  // if (!NODE_EXTRA_CA_CERTS) {
-  //   console.error(` The NODE_EXTRA_CA_CERTS env var has not been set. Please see README.md for more info`);
-  //   process.exit(1);
-
-  // }
-  // const context: Context = {
-  //   jiraFeatureEnumerationsLoader
-  // }
-
-  const app = express();
-
-  const server: ApolloServer = new ApolloServer({
-    schema: await createSchema()
+  const serverConfig: Config = {
+    schema,
     // context,
-    // introspection,
-    // playground
-  });
+    // subscriptions,
+    playground: {
+      settings: {
+        'editor.theme': 'dark',
+        'editor.cursorShape': 'line'
+      }
+    }
+  };
 
-  app.use(bodyParser);
-  app.use(cors());
-  app.use(compression());
+  const server: ApolloServer = new ApolloServer(serverConfig);
 
-  server.applyMiddleware({ app });
+  // app.use(bodyParser)
+  // app.use(cors())
+  // app.use(compression())
+
+  // server.applyMiddleware({ app })
 
   // exportController(app)
 
-  app.listen({ port }),
-    () => {
-      // console.info(`GraphQL Playground: ${playground}`)
-      // console.info(`GraphQL Introspection: ${introspection}`)
-      console.info(`Production: ${NODE_ENV === 'production'}`);
-      console.info(`Experience API ready at http://localhost:${port}`);
-      console.info(
-        `GraphQL endpoint ready at http://localhost:${port}${server.graphqlPath}`
-      );
-    };
+  // app.listen({ port }),
+  //   () => {
+  //     // console.info(`Production: ${NODE_ENV === 'production'}`)
+  //     console.info(`🚀 API ready at http://localhost:${port}`)
+  //     console.info(
+  //       `GraphQL endpoint ready at http://localhost:${port}${server.graphqlPath}`
+  //     )
+  //   }
+  // app.listen({ port }), () => {
+  //   console.info(`🚀 Server ready at http://localhost:${port}`)
+  //   console.info(`🚀 GraphQL endpoint ready at http://localhost:${port}${server.graphqlPath}`)
+  // }
+  server.listen(port).then(({ url }) => {
+    console.info(`🚀 Server ready at ${url}`);
+    // console.info(`🚀 GraphQL endpoint ready at ${url}${server.graphqlPath}`)
+  });
 }
 
 export default server;
-
-// export type Context = {
-//   jiraFeatureEnumerationsLoader: DataLoader<string, JiraCustomFieldOption[]>
-// }

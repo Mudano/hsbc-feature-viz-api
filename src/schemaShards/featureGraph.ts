@@ -8,14 +8,14 @@ const typeDefs = gql`
   }
 
   type FeatureGraph {
-    issueKey: String
+    issuekey: String
     assigneeProjects: AssigneeProjects
     donStory: Issue
     benStory: Issue
   }
 
   type Issue {
-    issueKey: String
+    issuekey: String
     title: String
     description: String
     storyPoint: String
@@ -23,7 +23,7 @@ const typeDefs = gql`
   }
 
   type AssigneeProjects {
-    id: Int
+    id: ID
     assignee: String
     project: String
   }
@@ -31,7 +31,8 @@ const typeDefs = gql`
 export default {
   resolvers: {
     Query: {
-      featureGraphs: () => getFeatureGraphs()
+      featureGraphs: async () => await getFeatureGraphs()
+      // featureGraphs: () => getFeatureGraphs(printRows)
     }
   },
   typeDefs: [typeDefs]

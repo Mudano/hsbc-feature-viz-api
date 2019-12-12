@@ -1,12 +1,41 @@
-import sqlite3 from 'sqlite3'
-import path from 'path'
+import { Pool, PoolConfig } from 'pg'
+// instantiate the PostgreSQL connection pool
 
-const dbPath = path.resolve(__dirname, './jira_db')
+require('dotenv')
 
-const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READONLY, err => {
-  if (err) return console.error(`💾 ${err.message}`)
-  console.info('💾 Conneced to jira_db')
-})
+const pgPromiseConfig: PoolConfig = {
+  // user: process.env["POSTGRES_USER"],
+  // host: process.env["POSTGRES_HOST"],
+  // port: process.env["POSTGRES_DB"],
+  // database: process.env["POSTGRES_PASSWORD"],
+  // password: process.env["POSTGRES_PORT"],
+  user: 'lsalmins',
+  host: 'nonprod-dsol-prototyping-db.ctolc6xouppg.eu-west-1.rds.amazonaws.com',
+  port: 5432,
+  database: 'dev',
+  password: 'k4GL$o4MK#X4x@JR@*m7'
+}
+const pool = new Pool(pgPromiseConfig)
+
+/**
+ * pg-prmoise setup
+ * adapted from https://github.com/vitaly-t/pg-promise/blob/master/examples/monitor.js
+ */
+import promise from 'bluebird' // or any other Promise/A+ compatible library
+import * as monitor from 'pg-monitor'
+
+const initOptions = {
+  promiseLib: promise // overriding the default (ES6 Promise)
+}
+
+const pgp = require('pg-promise')(initOptions)
+
+monitor.attach(initOptions) // attach to all query events
+
+// monitor.setTheme(myTheme); // selecting your own theme;
+monitor.setTheme('invertedMonochrome') // change the default theme
+
+const db = pgp(pgPromiseConfig) // database instance
 
 type FeatureGraph = {}
 
@@ -21,21 +50,13 @@ const selectAllFeatureGraphSQL = `
   SELECT
     *
   FROM
-    jira_issues
+    prototyping.jira_issues
   LIMIT
     10
 `
 
-// export async function getFeatureGraphs(): Promise<FeatureGraph[]> {
-// export async function getFeatureGraphs(): Promise<void> {
-export function getFeatureGraphs(): void {
-  db.all(selectAllFeatureGraphSQL, [], (err, rows) => {
-    if (err) throw err
-    // console.log(rows)
-    console.log(` Fetched ${rows.length} Feature Graphs from the db`)
-    return rows
-    // rows.forEach(row => console.log(row))
-  })
+export async function getFeatureGraphs(): Promise<any> {
+  const jiraIssues = await db.any(selectAllFeatureGraphSQL)
+  console.log(jiraIssues)
+  return jiraIssues
 }
-
-// getFeatureGraphs()

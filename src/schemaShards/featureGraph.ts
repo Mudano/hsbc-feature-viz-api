@@ -8,28 +8,62 @@ const typeDefs = gql`
   }
 
   type FeatureGraph {
-    issueKey: String
-    title: String
-    description: String
-    storyPoint: String
-    project: String
-    assigneeProjects: AssigneeProjects
-    benStory: Issue
-    # donStory: Issue
+    id: String
+    bubbleData: BubbleData
+    quadData: QuadData
+    # timelineData: TimelineData
+    epic: String
+    system: String
+    agreedDependencies: [String]
+    # agreedDependencies: FeatureGraph[]
+    inferredDependencies: [String]
+    # inferredDependencies: FeatureGraph[]
+    featureName: String
+    market: String
+    cluster: String
+    crossFunctionalTeam: String
+    pod: String
+    users: [String]
+    # users: User[]
+    # TODO https://github.com/excitement-engineer/graphql-iso-date change to date type
+    dueDate: String
+    primaryFeature: Boolean
   }
 
-  type Issue {
-    issueKey: String
-    title: String
-    description: String
-    storyPoint: String
-    project: String
+  type User {
+    id: String
+    name: String
   }
 
-  type AssigneeProjects {
-    id: ID
-    assignee: String
-    project: String
+  type Epic {
+    id: String
+    name: String
+    features: [String]
+    featureCount: Int
+  }
+
+  type System {
+    id: String
+    name: String
+    features: [String]
+    featureCount: Int
+  }
+
+  type BubbleData {
+    nodes: [String]
+    links: [String]
+  }
+
+  type QuadData {
+    xCat: String
+    yCat: String
+    ragStatus: String
+    rCat: String
+  }
+
+  type TimelineData {
+    label: String
+    # data:
   }
 `
 export default {

@@ -1,26 +1,23 @@
 import { db } from './config'
-import { FeatureGraph } from '../__generated__/graphql'
+import { FeatureGraph } from '../__typedefs/graphql'
+import { featureGraphToBubble, featureGraphToTimeline } from '../utils'
 
 /**
  * SQL query joining various tables to construct the FeatureGraph type
  */
 const selectAllFeatureGraphSQL = `
   SELECT
-    ji.issuekey,
-    ji.title,
-    ji.description,
-    ji.storypoint,
-    ji.project,
-    jap. "Assignee",
-    jidon.issuekey AS don_story_issuekey,
-    jidon.title AS don_story_title,
-    jidon.description AS don_story_description,
-    jidon.storypoint AS don_story_storypoint,
-    jidon.project AS don_story_project
+    *
   FROM
-    prototyping.jira_issues_with_dep ji
-    LEFT JOIN prototyping.jira_assignee_projects jap ON jap.project = ji.project
-    LEFT JOIN prototyping.jira_issues_with_dep jidon ON jidon.issuekey = ji.don_story;
+    prototyping.jira_viz_dummy;
+`
+
+const createFeatureGraphSql = `
+  SELECT
+
+  FROM
+  
+  ;
 `
 
 /**
@@ -30,18 +27,31 @@ const selectAllFeatureGraphSQL = `
  */
 const toFeatureGraph = (row: any): FeatureGraph => {
   return {
-    issueKey: row.issuekey,
-    title: row.title,
-    description: row.description,
-    storyPoint: row.storypoint,
-    project: row.project,
-    benStory: {
-      issueKey: row.don_story_issuekey,
-      title: row.don_story_title,
-      description: row.don_story_description,
-      storyPoint: row.don_story_storypoint,
-      project: row.don_story_project
-    }
+    id: row.id,
+    featureName: row.featureName,
+    bubbleData: {},
+    // bubbleData: featureGraphToBubble(row),
+    // timelineData: featureGraphToTimeline(row),
+    quadData: {
+      xCat: row.x_cat,
+      yCat: row.y_cat,
+      ragStatus: row.rag_status,
+      rCat: row.r_cat
+    },
+    epic: row.epic,
+    system: row.system,
+    market: row.market,
+    cluster: row.cluster,
+    crossFunctionalTeam: row.cross_functional_team,
+    pod: row.pod,
+    agreedDependencies: [],
+    inferredDependencies: [],
+    users: [],
+    // agreedDependencies: row.agreedDependencies ,
+    // inferredDependencies: row.inferredDependencies ,
+    // users: row.users ,
+    dueDate: row.due_date,
+    primaryFeature: row.primary_feature
   }
 }
 
@@ -52,4 +62,44 @@ export async function getFeatureGraphs(): Promise<any> {
   const rawFeatureGraphs = await db.any(selectAllFeatureGraphSQL)
   console.log(rawFeatureGraphs.length)
   return rawFeatureGraphs.map((rfg: any): FeatureGraph => toFeatureGraph(rfg))
+}
+
+const nextFeatureGraphShape = {
+  id: 1, // Feature ID - probably has to be numeric
+  xCat: -0.66, // coordinates for the quad plot - how will these be derived?
+  yCat: 0.76,
+  ragStatus: 'G1', // RAG status
+  rCat: 4, // size of the quad bubble
+  epic: 1, // Epic ID for this feature
+  system: 1, // System ID for this feature
+  agreedDependencies: [2, 6, 11], // Existing dependecies (ID's of other features) from the JIRA system
+  inferredDependencies: [7, 5, 3], // Dependencies (ID's of other features) that might be inferred with Mudano ML
+  feature: 'Bubble Viz', // Feature name / description
+  market: 'UK',
+  cluster: '',
+  crossFunctionalTeam: '',
+  pod: 'Engineering',
+  users: [1, 2, 3], // Associated users. Assuming one feature can have many users. Currently ID, would probably want the full user objects returned
+  dueDate: '01/01/2020',
+  primary: true // should a field (bubble, or quad dot) be displayed with full opacity or not
+}
+
+const FeatureGraphShape = {
+  id: 1, // Feature ID - probably has to be numeric
+  xCat: -0.66, // coordinates for the quad plot - how will these be derived?
+  yCat: 0.76,
+  ragStatus: 'G1', // RAG status
+  rCat: 4, // size of the quad bubble
+  epic: 1, // Epic ID for this feature
+  system: 1, // System ID for this feature
+  agreedDependencies: [2, 6, 11], // Existing dependecies (ID's of other features) from the JIRA system
+  inferredDependencies: [7, 5, 3], // Dependencies (ID's of other features) that might be inferred with Mudano ML
+  feature: 'Bubble Viz', // Feature name / description
+  market: 'UK',
+  cluster: '',
+  crossFunctionalTeam: '',
+  pod: 'Engineering',
+  users: [1, 2, 3], // Associated users. Assuming one feature can have many users. Currently ID, would probably want the full user objects returned
+  dueDate: '01/01/2020',
+  primary: true // should a field (bubble, or quad dot) be displayed with full opacity or not
 }

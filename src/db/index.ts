@@ -1,42 +1,7 @@
 import { pgDb, sqliteDb } from './config'
 import { db2ConnectionString, db2Pool } from './config'
-import { FeatureGraph } from '../__typedefs/graphql'
-import { featureGraphToBubble, featureGraphToTimeline } from '../utils'
-
-/**
- * Given a row result from a SQL query, return a FeatureGraph object
- * constructed from that row data
- * @param row
- */
-export const toFeatureGraph = (row: any): FeatureGraph => {
-  return {
-    id: row.id,
-    featureName: row.featureName,
-    bubbleData: {},
-    // bubbleData: featureGraphToBubble(row),
-    // timelineData: featureGraphToTimeline(row),
-    quadData: {
-      xCat: row.x_cat,
-      yCat: row.y_cat,
-      ragStatus: row.rag_status,
-      rCat: row.r_cat
-    },
-    epic: row.epic,
-    system: row.system,
-    market: row.market,
-    cluster: row.cluster,
-    crossFunctionalTeam: row.cross_functional_team,
-    pod: row.pod,
-    agreedDependencies: [],
-    inferredDependencies: [],
-    users: [],
-    // agreedDependencies: row.agreedDependencies ,
-    // inferredDependencies: row.inferredDependencies ,
-    // users: row.users ,
-    dueDate: row.due_date,
-    primaryFeature: row.primary_feature
-  }
-}
+import { Feature } from '../__typedefs/graphql'
+import { sqlRowsToFeatureGraphs } from '../utils'
 
 /**
  * SQL queries
@@ -49,39 +14,80 @@ const pgSelectAllFeatureGraphSQL = `
 `
 
 const db2Sql = `
-  SELECT * FROM blah
+  SELECT * FROM table;
 `
 
 const sqliteSelectAllIssuesSql = `
   SELECT
     *
   FROM
-    jira_issues
+    jira_issues_with_dep;
+`
+
+const sqliteSelectAllDependenciesSql = `
+  SELECT 
+    * 
+  FROM
+    jira_issues;
+`
+const sqliteFeatureGraphsSql = `
+  SELECT
+    x AS id,
+    x AS featureName,
+    x AS x_cat,
+    x AS y_cat,
+    x AS rag_status,
+    x AS r_cat,
+    x AS epic,
+    x AS system,
+    x AS market,
+    x AS cluster,
+    x AS cross_functional_team,
+    x AS pod,
+    x AS due_date
+  FROM
+    features
+  JOIN 
+    
 `
 
 /**
  * SQLITE FUNCTIONS
  * https://github.com/kriasoft/node-sqlite
  */
-export const sqliteQuery = async () => {
+export const sqliteQuery = async (sql: string) => {
   try {
     const db = await sqliteDb
     // @ts-ignore
     console.log('💾 [Sqlite3] querying', db.driver.filename)
-    const results = db.all(sqliteSelectAllIssuesSql)
-    return results
+    return db.all(sql)
   } catch (error) {
     console.error(`💾 [sqlite] query error:`, error)
   }
 }
 
+/**
+ * Query multiple tables and join results
+ */
+// export const queryAndJoin = async () => {
+//   try {
+//     const issuesWithDep = await sqliteQuery(sqliteSelectAllIssuesSql)
+//     const allIssues = await sqliteQuery(sqliteSelectAllDependenciesSql)
+//     // @ts-ignore
+//     return issuesWithDep.map(i => {
+//       return {
+//         ...i,
+//         // @ts-ignore
+//         dependencies: allIssues.filter(ai => ai.issuekey === i.don_story)
+//       }
+//     })
+//   } catch (error) {
+//     console.error(`💾 [sqlite] quer error:`, error)
+//   }
+// }
 export const queryAndJoin = async () => {
   try {
-    const db = await sqliteDb
-    // @ts-ignore
-    console.log('💾 [Sqlite3] querying', db.driver.filename)
-    const results = db.all(sqliteSelectAllIssuesSql)
-    return results
+    const featureGraphs = await sqliteQuery(sqliteFeatureGraphsSql)
   } catch (error) {
     console.error(`💾 [sqlite] quer error:`, error)
   }
@@ -93,6 +99,9 @@ export const queryAndJoin = async () => {
  *
  * Connection Errors
  * https://www.ibm.com/support/pages/ibmslapd-cannot-connect-db2-database-and-gets-unsupported-function-error
+ *
+ * TODO: how to run DB2 queries using async / await - though it might not be needed if querySync gives the
+ * same behaviour
  */
 // export const db2Query = (sql: string, callBack: Function) => {
 export const db2Query = () => {
@@ -118,5 +127,6 @@ export const db2Query = () => {
 export async function pgQuery(): Promise<any> {
   const results = await pgDb.any(pgSelectAllFeatureGraphSQL)
   console.log(results.length, 'results returned')
-  return results.map((rfg: any): FeatureGraph => toFeatureGraph(rfg))
+  console.log('1st result:', results[0])
+  return sqlRowsToFeatureGraphs(results)
 }

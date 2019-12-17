@@ -1,19 +1,18 @@
-import { pgQuery, sqliteQuery } from '../db'
+import { pgQuery, queryAndJoin } from '../db'
 import { gql } from 'apollo-server'
-
-// TODO: complete timeline type
-// TODO: complete bubble type
-// TODO: check all @ts-ignores
+import { GraphQLScalarType } from 'graphql'
+import { Kind } from 'graphql/language'
 
 const typeDefs = gql`
+  scalar Date
   extend type Query {
-    featureGraphs: [FeatureGraph]!
-    featureGraph(id: ID!): FeatureGraph
+    featureGraphs: FeatureGraphs!
+    # featureGraph(id: ID!): Feature
     testIssues: [TestIssue]
   }
 
   type TestIssue {
-    issueKey: String
+    issuekey: String
     title: String
     description: String
     storypoint: String
@@ -21,27 +20,40 @@ const typeDefs = gql`
     dependencies: [TestIssue]
   }
 
-  type FeatureGraph {
+  # these are not required by the front end, apart from the filters,
+  # but they are requird when filtering and return the list of graphDatas
+  type Feature {
     id: String
-    bubbleData: BubbleData
-    quadData: QuadData
-    # timelineData: TimelineData
+    featureName: String
     epic: String
     system: String
-    agreedDependencies: [String]
-    # agreedDependencies: FeatureGraph[]
-    inferredDependencies: [String]
-    # inferredDependencies: FeatureGraph[]
-    featureName: String
     market: String
     cluster: String
     crossFunctionalTeam: String
     pod: String
+    agreedDependencies: [String]
+    # agreedDependencies: Feature[]
+    inferredDependencies: [String]
+    # inferredDependencies: Feature[]
     users: [String]
     # users: User[]
-    # TODO https://github.com/excitement-engineer/graphql-iso-date change to date type
-    dueDate: String
+    dueDate: Date
     primaryFeature: Boolean
+    # QuadData Fields
+    xCat: String
+    yCat: String
+    ragStatus: String
+    rCat: String
+    # BubbleData Fields
+    colour: String
+    budget: String
+  }
+
+  type FeatureGraphs {
+    features: [Feature]
+    bubbleFeatures: BubbleData
+    quadFeatures: [QuadData]
+    timelineFeatures: [TimelineData]
   }
 
   type User {
@@ -63,30 +75,77 @@ const typeDefs = gql`
     featureCount: Int
   }
 
+  type BubbleNode {
+    id: String
+    agreedDependencies: [String]
+    primaryFeature: String
+    group: String
+    colour: String
+  }
+
+  type BubbleLink {
+    # both of these are Feature IDs
+    source: String
+    target: String
+  }
+
   type BubbleData {
-    nodes: [String]
-    links: [String]
+    nodes: [BubbleNode]
+    links: [BubbleLink]
   }
 
   type QuadData {
+    id: String
     xCat: String
     yCat: String
     ragStatus: String
     rCat: String
+    featureName: String
+    primaryFeature: String
+  }
+
+  type _TimelineData {
+    label: String
+    type: String
+    customClass: String
+    at: Date
   }
 
   type TimelineData {
     label: String
-    # data:
+    data: [_TimelineData]
   }
 `
 export default {
   resolvers: {
     Query: {
       featureGraphs: async () => await pgQuery(),
-      testIssues: async () => await sqliteQuery()
-      // featureGraphs: () => getFeatureGraphs(printRows)
-    }
+      testIssues: async () => await queryAndJoin()
+      // bubbleFeatures: async () => bubbleFeatures(),
+      // quadFeatures: async () => quadFeatures(),
+      // timelineFeatures: async () => timelineFeatures()
+    },
+    // using the implementation from the docs
+    // https://www.apollographql.com/docs/graphql-tools/scalars/#date-as-a-scalar
+    // https://stackoverflow.com/questions/49693928/date-and-json-in-type-definition-for-graphql
+    // TODO: do we want to switch to this implementation:
+    // https://github.com/excitement-engineer/graphql-iso-date
+    Date: new GraphQLScalarType({
+      name: 'Date',
+      description: 'Date custom scalar type',
+      parseValue(value) {
+        return new Date(value) // value from the client
+      },
+      serialize(value) {
+        return value.getTime() // value sent to the client
+      },
+      parseLiteral(ast) {
+        if (ast.kind === Kind.INT) {
+          return parseInt(ast.value, 10) // ast value is always in string format
+        }
+        return null
+      }
+    })
   },
   typeDefs: [typeDefs]
 }

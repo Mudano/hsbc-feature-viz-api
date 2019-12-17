@@ -1,24 +1,6 @@
-import { db } from './config'
+import { pgDb, sqliteDb } from './config'
 import { FeatureGraph } from '../__typedefs/graphql'
 import { featureGraphToBubble, featureGraphToTimeline } from '../utils'
-
-/**
- * SQL query joining various tables to construct the FeatureGraph type
- */
-const selectAllFeatureGraphSQL = `
-  SELECT
-    *
-  FROM
-    prototyping.jira_viz_dummy;
-`
-
-const createFeatureGraphSql = `
-  SELECT
-
-  FROM
-  
-  ;
-`
 
 /**
  * Given a row result from a SQL query, return a FeatureGraph object
@@ -56,10 +38,48 @@ const toFeatureGraph = (row: any): FeatureGraph => {
 }
 
 /**
+ * SQL query joining various tables to construct the FeatureGraph type
+ */
+const selectAllFeatureGraphSQL = `
+  SELECT
+    *
+  FROM
+    prototyping.jira_viz_dummy;
+`
+
+const createFeatureGraphSql = `
+  SELECT
+
+  FROM
+  
+  ;
+`
+
+/**
+ * SQLITE FUNCTIONS
+ */
+
+// export function getFeatureGraphs(): void {
+//   db.all(selectAllFeatureGraphSQL, [], (err, rows) => {
+//     if (err) throw err;
+//     // console.log(rows)
+//     console.log(` Fetched ${rows.length} Feature Graphs from the db`);
+//     return rows;
+//     // rows.forEach(row => console.log(row))
+//   });
+// }
+
+/**
+ * DB2 FUNCTIONS
+ */
+
+/**
+ * POSTGRES FUNCTIONS
+ *
  * Return a list of FeatureGraph objects
  */
 export async function getFeatureGraphs(): Promise<any> {
-  const rawFeatureGraphs = await db.any(selectAllFeatureGraphSQL)
+  const rawFeatureGraphs = await pgDb.any(selectAllFeatureGraphSQL)
   console.log(rawFeatureGraphs.length)
   return rawFeatureGraphs.map((rfg: any): FeatureGraph => toFeatureGraph(rfg))
 }

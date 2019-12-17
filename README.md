@@ -2,6 +2,12 @@
 
 ## Development
 
+### Environment Variables & DB connection
+
+This repo contains connectors for PostgresQL (via pg-promise), SQLite and DB2.
+
+Create a `.env` file based on the `.env.template` file, and fill in the required fields, depending on the desired database connection (DB2 or postgres)
+
 ### `npm start`
 
 Runs the app locally on `http://localhost:4000`. The server will automatically restart as you make code changes.

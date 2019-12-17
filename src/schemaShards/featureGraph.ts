@@ -1,10 +1,24 @@
-import { getFeatureGraphs } from '../db'
+import { pgQuery, sqliteQuery } from '../db'
 import { gql } from 'apollo-server'
+
+// TODO: complete timeline type
+// TODO: complete bubble type
+// TODO: check all @ts-ignores
 
 const typeDefs = gql`
   extend type Query {
     featureGraphs: [FeatureGraph]!
     featureGraph(id: ID!): FeatureGraph
+    testIssues: [TestIssue]
+  }
+
+  type TestIssue {
+    issueKey: String
+    title: String
+    description: String
+    storypoint: String
+    project: String
+    dependencies: [TestIssue]
   }
 
   type FeatureGraph {
@@ -69,7 +83,8 @@ const typeDefs = gql`
 export default {
   resolvers: {
     Query: {
-      featureGraphs: async () => await getFeatureGraphs()
+      featureGraphs: async () => await pgQuery(),
+      testIssues: async () => await sqliteQuery()
       // featureGraphs: () => getFeatureGraphs(printRows)
     }
   },

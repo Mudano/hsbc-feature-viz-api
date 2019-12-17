@@ -4,11 +4,9 @@ require('dotenv').config()
  * DB2 CONNECTOR
  */
 import * as ibmdb from 'ibm_db'
-// const ibmdb = require('ibm_db')		//For connecting to DB
-// const db2Pool = require("ibm_db").Pool 	// For connection pooling
-// const async = require('async')
+export const db2Pool = require('ibm_db').Pool // For connection pooling
 
-const db2ConnectionString = (function() {
+export const db2ConnectionString = (function() {
   return `
     DATABASE=${process.env['DB2_DATABASE']}
     UID=${process.env['DB2_USER']}
@@ -19,47 +17,46 @@ const db2ConnectionString = (function() {
   `.replace(/\s/g, '')
 })()
 
-console.log('db2ConnectionString', db2ConnectionString)
+console.log('💾 [DB2] connection string', db2ConnectionString)
 
 ibmdb.open(db2ConnectionString, function(err, conn) {
-  if (err) return console.error(`💾 [DB2]`, err)
+  if (err) return console.error(`💾 [DB2] connection error:`, err)
 
-  conn.query('select 1 from sysibm.sysdummy1', function(err, data) {
-    if (err) console.error(`💾 [DB2] ${err}`)
+  const query = `SELECT * FROM JIRA.ISSUES_STG LIMIT 10;`
+
+  conn.query(query, function(err, data) {
+    if (err) console.error(`💾 [DB2] query error ${err}`)
     console.log(data)
 
-    conn.close(function() {
-      console.log('done')
-    })
+    conn.close(() => console.log('done'))
   })
 })
 
 /**
  * SQLITE CONNECTOR
  */
-import sqlite3 from 'sqlite3'
+import sqlite from 'sqlite'
+import promise from 'bluebird'
 import path from 'path'
 
-const dbPath = path.resolve(__dirname, `./${process.env['SQLITE_DB_NAME']}`)
-
-export const sqliteDb = new sqlite3.Database(
-  dbPath,
-  sqlite3.OPEN_READONLY,
-  err => {
-    if (err) return console.error(`💾 ${err.message}`)
-    console.info('💾 [Sqlite3] Conneced to jira_db')
-  }
+const sqliteDbPath = path.resolve(
+  __dirname,
+  `./${process.env['SQLITE_DB_NAME']}`
 )
+// @ts-ignore
+export const sqliteDb = sqlite.open(sqliteDbPath, { Promise: promise })
 
 /**
  * POSTGRES CONNECTOR
  */
-import { Pool, PoolConfig } from 'pg'
+import {
+  // Pool,
+  PoolConfig
+} from 'pg'
 /**
  * pg-prmoise setup
  * adapted from https://github.com/vitaly-t/pg-promise/blob/master/examples/monitor.js
  */
-import promise from 'bluebird' // or any other Promise/A+ compatible library
 import * as monitor from 'pg-monitor'
 
 const pgPromiseConfig: PoolConfig = {
@@ -83,7 +80,6 @@ const pgp = require('pg-promise')(initOptions)
 // attach to all query events
 monitor.attach(initOptions)
 
-// monitor.setTheme(myTheme) // selecting your own theme
 // change the default theme
 monitor.setTheme('invertedMonochrome')
 

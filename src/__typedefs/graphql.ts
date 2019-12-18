@@ -66,7 +66,7 @@ export type Feature = {
   inferredDependencies?: Maybe<Array<Maybe<Scalars['String']>>>
   users?: Maybe<Array<Maybe<Scalars['String']>>>
   dueDate?: Maybe<Scalars['Date']>
-  primaryFeature?: Maybe<Scalars['Boolean']>
+  primaryFeature?: Maybe<Scalars['String']>
   xCat?: Maybe<Scalars['String']>
   yCat?: Maybe<Scalars['String']>
   ragStatus?: Maybe<Scalars['String']>
@@ -239,7 +239,6 @@ export type ResolversTypes = {
   FeatureGraphs: ResolverTypeWrapper<FeatureGraphs>
   Feature: ResolverTypeWrapper<Feature>
   Date: ResolverTypeWrapper<Scalars['Date']>
-  Boolean: ResolverTypeWrapper<Scalars['Boolean']>
   BubbleData: ResolverTypeWrapper<BubbleData>
   BubbleNode: ResolverTypeWrapper<BubbleNode>
   BubbleLink: ResolverTypeWrapper<BubbleLink>
@@ -247,6 +246,7 @@ export type ResolversTypes = {
   TimelineData: ResolverTypeWrapper<TimelineData>
   _TimelineData: ResolverTypeWrapper<_TimelineData>
   TestIssue: ResolverTypeWrapper<TestIssue>
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']>
   Epic: ResolverTypeWrapper<Epic>
   Int: ResolverTypeWrapper<Scalars['Int']>
   System: ResolverTypeWrapper<System>
@@ -260,7 +260,6 @@ export type ResolversParentTypes = {
   FeatureGraphs: FeatureGraphs
   Feature: Feature
   Date: Scalars['Date']
-  Boolean: Scalars['Boolean']
   BubbleData: BubbleData
   BubbleNode: BubbleNode
   BubbleLink: BubbleLink
@@ -268,6 +267,7 @@ export type ResolversParentTypes = {
   TimelineData: TimelineData
   _TimelineData: _TimelineData
   TestIssue: TestIssue
+  Boolean: Scalars['Boolean']
   Epic: Epic
   Int: Scalars['Int']
   System: System
@@ -387,7 +387,7 @@ export type FeatureResolvers<
   >
   dueDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>
   primaryFeature?: Resolver<
-    Maybe<ResolversTypes['Boolean']>,
+    Maybe<ResolversTypes['String']>,
     ParentType,
     ContextType
   >

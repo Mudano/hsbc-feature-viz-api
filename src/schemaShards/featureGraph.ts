@@ -38,7 +38,7 @@ const typeDefs = gql`
     users: [String]
     # users: User[]
     dueDate: Date
-    primaryFeature: Boolean
+    primaryFeature: String
     # QuadData Fields
     xCat: String
     yCat: String

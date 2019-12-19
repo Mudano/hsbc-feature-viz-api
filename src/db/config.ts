@@ -17,20 +17,20 @@ export const db2ConnectionString = (function() {
   `.replace(/\s/g, '')
 })()
 
-console.log('💾 [DB2] connection string', db2ConnectionString)
+// console.log('💾 [DB2] connection string', db2ConnectionString)
 
-ibmdb.open(db2ConnectionString, function(err, conn) {
-  if (err) return console.error(`💾 [DB2] connection error:`, err)
+// ibmdb.open(db2ConnectionString, function(err, conn) {
+//   if (err) return console.error(`💾 [DB2] connection error:`, err)
 
-  const query = `SELECT * FROM JIRA.ISSUES_STG LIMIT 10;`
+//   const query = `SELECT * FROM JIRA.ISSUES_STG LIMIT 10;`
 
-  conn.query(query, function(err, data) {
-    if (err) console.error(`💾 [DB2] query error ${err}`)
-    console.log(data)
+//   conn.query(query, function(err, data) {
+//     if (err) console.error(`💾 [DB2] query error ${err}`)
+//     console.log(data)
 
-    conn.close(() => console.log('done'))
-  })
-})
+//     conn.close(() => console.log('done'))
+//   })
+// })
 
 /**
  * SQLITE CONNECTOR

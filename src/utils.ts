@@ -31,28 +31,32 @@ export const mergeRawSchemas = (
  * Given multiple queries, join them to give a Feature with its dependencies
  * @param mainQueryResult
  */
-export const joinQuerys = (mainQueryResult: any): Feature => {
-  return {
-    id: mainQueryResult.id,
-    featureName: mainQueryResult.feature_name,
-    epic: mainQueryResult.epic,
-    system: mainQueryResult.system,
-    market: mainQueryResult.market,
-    cluster: mainQueryResult.cluster,
-    crossFunctionalTeam: mainQueryResult.cross_functional_team,
-    pod: mainQueryResult.pod,
-    agreedDependencies: mainQueryResult.agreed_dependencies,
-    inferredDependencies: mainQueryResult.inferred_dependencies,
-    users: mainQueryResult.users,
-    dueDate: mainQueryResult.due_date,
-    primaryFeature: mainQueryResult.primary,
-    xCat: mainQueryResult.x_cat,
-    yCat: mainQueryResult.y_cat,
-    ragStatus: mainQueryResult.rag_status,
-    rCat: mainQueryResult.r_cat,
-    colour: mainQueryResult.colour,
-    budget: mainQueryResult.budget
-  }
+export const joinQuerys = (features: any, dependencies: any): Feature[] => {
+  return features.map((feature: any) => ({
+    id: feature.id,
+    featureName: feature.feature_name,
+    epic: feature.epic,
+    system: feature.system,
+    market: feature.market,
+    cluster: feature.cluster,
+    crossFunctionalTeam: feature.cross_functional_team,
+    pod: feature.pod,
+    // this is assuming there is a dependency join table
+    agreedDependencies: dependencies
+      .filter((d: any) => d.source === feature.id)
+      .map((d: any) => d.target),
+    // agreedDependencies: ['1', '2'],
+    inferredDependencies: dependencies.inferred_dependencies,
+    users: feature.users,
+    dueDate: feature.due_date,
+    primaryFeature: feature.primary,
+    xCat: feature.x_cat,
+    yCat: feature.y_cat,
+    ragStatus: feature.rag_status,
+    rCat: feature.r_cat,
+    colour: feature.colour,
+    budget: feature.budget
+  }))
 }
 
 /**
@@ -87,9 +91,9 @@ const rowsToFeatures = (row: Feature): Feature => {
     cluster: row.cluster,
     crossFunctionalTeam: row.crossFunctionalTeam,
     pod: row.pod,
-    // agreedDependencies: row.agreed_dependencies,
+    agreedDependencies: row.agreedDependencies,
     // inferredDependencies: row.inferred_dependencies,
-    agreedDependencies: [],
+    // agreedDependencies: [],
     inferredDependencies: [],
     users: row.users,
     dueDate: row.dueDate,
@@ -249,7 +253,7 @@ export const featuresToTimeline = (value: string, featureGraphs: Feature[]) => {
     })
     // data structure
   })
-  console.log('timeline new structure:', newStructure)
+  // console.log('timeline new structure:', newStructure)
 
   return newStructure
 }
@@ -260,7 +264,6 @@ export const featuresToTimeline = (value: string, featureGraphs: Feature[]) => {
  * @param {Feature} record
  */
 export const featureGraphToBubble = (row: any) => {
-  row['agreedDependencies'] = []
   return {
     node: {
       id: row.id,

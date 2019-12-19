@@ -41,7 +41,7 @@ export type BubbleNode = {
   agreedDependencies?: Maybe<Array<Maybe<Scalars['String']>>>
   primaryFeature?: Maybe<Scalars['String']>
   group?: Maybe<Scalars['String']>
-  colour?: Maybe<Scalars['String']>
+  size?: Maybe<Scalars['String']>
 }
 
 export type Epic = {
@@ -328,7 +328,7 @@ export type BubbleNodeResolvers<
     ContextType
   >
   group?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
-  colour?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
+  size?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
 }
 
 export interface DateScalarConfig

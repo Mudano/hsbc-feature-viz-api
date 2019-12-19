@@ -1,16 +1,23 @@
 import { pgDb, sqliteDb } from './config'
 import { db2ConnectionString, db2Pool } from './config'
 import { Feature } from '../__typedefs/graphql'
-import { sqlRowsToFeatureGraphs } from '../utils'
+import { sqlRowsToFeatureGraphs, joinQuerys } from '../utils'
 
 /**
  * SQL queries
  */
-const pgSelectAllFeatureGraphSQL = `
+const pgSelectAllFeatures = `
   SELECT
     *
   FROM
     prototyping.jira_viz_dummy
+`
+
+const pgSelectAllDeps = `
+  SELECT 
+    *
+  FROM
+    prototyping.agreed_dependencies
 `
 
 /**
@@ -60,8 +67,12 @@ export const sqliteQuery = async (sql: string) => {
  * Return a list of FeatureGraph objects
  */
 export async function pgQuery(): Promise<any> {
-  const results = await pgDb.any(pgSelectAllFeatureGraphSQL)
-  console.log(`💾 [POSTGRES] ${results.length} results returned`)
-  // console.log('1st result:', results[0])
-  return sqlRowsToFeatureGraphs(results)
+  const features = await pgDb.any(pgSelectAllFeatures)
+  const dependencies = await pgDb.any(pgSelectAllDeps)
+  // console.log(dependencies)
+  console.log(`💾 [POSTGRES] ${features.length} features returned`)
+  console.log(`💾 [POSTGRES] ${dependencies.length} dependencies returned`)
+
+  const joined = joinQuerys(features, dependencies)
+  return sqlRowsToFeatureGraphs(joined)
 }

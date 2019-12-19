@@ -44,12 +44,12 @@ export const joinQuerys = (features: any, dependencies: any): Feature[] => {
     // this is assuming there is a dependency join table
     agreedDependencies: dependencies
       .filter((d: any) => d.source === feature.id)
-      .map((d: any) => d.target),
+      .map((d: any) => parseInt(d.target)),
     // agreedDependencies: ['1', '2'],
     inferredDependencies: dependencies.inferred_dependencies,
     users: feature.users,
     dueDate: feature.due_date,
-    primaryFeature: feature.primary,
+    primaryFeature: true,
     xCat: feature.x_cat,
     yCat: feature.y_cat,
     ragStatus: feature.rag_status,
@@ -60,11 +60,8 @@ export const joinQuerys = (features: any, dependencies: any): Feature[] => {
 }
 
 /**
- * Given an Array of rows return from a sql query, return a FeatureGraphs
- * object
+ * Given an Array of Features, return a FeatureGraphs object
  *
- * TODO: this should take a list of features, that has been constructed from the function
- * that joins the results of multiples  queries together
  * @param rows
  */
 export const sqlRowsToFeatureGraphs = (rows: Feature[]): FeatureGraphs => {
@@ -93,7 +90,6 @@ const rowsToFeatures = (row: Feature): Feature => {
     pod: row.pod,
     agreedDependencies: row.agreedDependencies,
     // inferredDependencies: row.inferred_dependencies,
-    // agreedDependencies: [],
     inferredDependencies: [],
     users: row.users,
     dueDate: row.dueDate,
@@ -268,11 +264,9 @@ export const featureGraphToBubble = (row: any) => {
     node: {
       id: row.id,
       agreedDependencies: row.agreedDependencies,
-      // TODO map the correct types for bolean here
-      // primaryFeature: row.primaryFeature,
-      primaryFeature: 'true',
-      group: '1',
-      size: '3'
+      primaryFeature: true,
+      group: 1,
+      size: 3
       // group: row.colour,
       // size: row.budget
     },

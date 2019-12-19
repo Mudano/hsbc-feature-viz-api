@@ -31,14 +31,14 @@ const typeDefs = gql`
     cluster: String
     crossFunctionalTeam: String
     pod: String
-    agreedDependencies: [String]
+    agreedDependencies: [Int]
     # agreedDependencies: Feature[]
     inferredDependencies: [String]
     # inferredDependencies: Feature[]
     users: [String]
     # users: User[]
     dueDate: Date
-    primaryFeature: String
+    primaryFeature: Boolean
     # QuadData Fields
     xCat: String
     yCat: String
@@ -76,17 +76,17 @@ const typeDefs = gql`
   }
 
   type BubbleNode {
-    id: String
-    agreedDependencies: [String]
-    primaryFeature: String
-    group: String # colour
-    size: String # budget
+    id: Int
+    agreedDependencies: [Int]
+    primaryFeature: Boolean
+    group: Int # colour
+    size: Int # budget
   }
 
   type BubbleLink {
     # both of these are Feature IDs
-    source: String
-    target: String
+    source: Int
+    target: Int
   }
 
   type BubbleData {
@@ -101,7 +101,7 @@ const typeDefs = gql`
     ragStatus: String
     rCat: String
     featureName: String
-    primaryFeature: String
+    primaryFeature: Boolean
   }
 
   type _TimelineData {

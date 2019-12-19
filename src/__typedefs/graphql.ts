@@ -31,17 +31,17 @@ export type BubbleData = {
 
 export type BubbleLink = {
   __typename?: 'BubbleLink'
-  source?: Maybe<Scalars['String']>
-  target?: Maybe<Scalars['String']>
+  source?: Maybe<Scalars['Int']>
+  target?: Maybe<Scalars['Int']>
 }
 
 export type BubbleNode = {
   __typename?: 'BubbleNode'
-  id?: Maybe<Scalars['String']>
-  agreedDependencies?: Maybe<Array<Maybe<Scalars['String']>>>
-  primaryFeature?: Maybe<Scalars['String']>
-  group?: Maybe<Scalars['String']>
-  size?: Maybe<Scalars['String']>
+  id?: Maybe<Scalars['Int']>
+  agreedDependencies?: Maybe<Array<Maybe<Scalars['Int']>>>
+  primaryFeature?: Maybe<Scalars['Boolean']>
+  group?: Maybe<Scalars['Int']>
+  size?: Maybe<Scalars['Int']>
 }
 
 export type Epic = {
@@ -62,11 +62,11 @@ export type Feature = {
   cluster?: Maybe<Scalars['String']>
   crossFunctionalTeam?: Maybe<Scalars['String']>
   pod?: Maybe<Scalars['String']>
-  agreedDependencies?: Maybe<Array<Maybe<Scalars['String']>>>
+  agreedDependencies?: Maybe<Array<Maybe<Scalars['Int']>>>
   inferredDependencies?: Maybe<Array<Maybe<Scalars['String']>>>
   users?: Maybe<Array<Maybe<Scalars['String']>>>
   dueDate?: Maybe<Scalars['Date']>
-  primaryFeature?: Maybe<Scalars['String']>
+  primaryFeature?: Maybe<Scalars['Boolean']>
   xCat?: Maybe<Scalars['String']>
   yCat?: Maybe<Scalars['String']>
   ragStatus?: Maybe<Scalars['String']>
@@ -91,7 +91,7 @@ export type QuadData = {
   ragStatus?: Maybe<Scalars['String']>
   rCat?: Maybe<Scalars['String']>
   featureName?: Maybe<Scalars['String']>
-  primaryFeature?: Maybe<Scalars['String']>
+  primaryFeature?: Maybe<Scalars['Boolean']>
 }
 
 export type Query = {
@@ -308,27 +308,27 @@ export type BubbleLinkResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['BubbleLink'] = ResolversParentTypes['BubbleLink']
 > = {
-  source?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
-  target?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
+  source?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>
+  target?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>
 }
 
 export type BubbleNodeResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['BubbleNode'] = ResolversParentTypes['BubbleNode']
 > = {
-  id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
+  id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>
   agreedDependencies?: Resolver<
-    Maybe<Array<Maybe<ResolversTypes['String']>>>,
+    Maybe<Array<Maybe<ResolversTypes['Int']>>>,
     ParentType,
     ContextType
   >
   primaryFeature?: Resolver<
-    Maybe<ResolversTypes['String']>,
+    Maybe<ResolversTypes['Boolean']>,
     ParentType,
     ContextType
   >
-  group?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
-  size?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
+  group?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>
+  size?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>
 }
 
 export interface DateScalarConfig
@@ -371,7 +371,7 @@ export type FeatureResolvers<
   >
   pod?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   agreedDependencies?: Resolver<
-    Maybe<Array<Maybe<ResolversTypes['String']>>>,
+    Maybe<Array<Maybe<ResolversTypes['Int']>>>,
     ParentType,
     ContextType
   >
@@ -387,7 +387,7 @@ export type FeatureResolvers<
   >
   dueDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>
   primaryFeature?: Resolver<
-    Maybe<ResolversTypes['String']>,
+    Maybe<ResolversTypes['Boolean']>,
     ParentType,
     ContextType
   >
@@ -440,7 +440,7 @@ export type QuadDataResolvers<
     ContextType
   >
   primaryFeature?: Resolver<
-    Maybe<ResolversTypes['String']>,
+    Maybe<ResolversTypes['Boolean']>,
     ParentType,
     ContextType
   >

@@ -42,8 +42,6 @@ export const sqliteQuery = async (sql: string) => {
  * Connection Errors
  * https://www.ibm.com/support/pages/ibmslapd-cannot-connect-db2-database-and-gets-unsupported-function-error
  *
- * TODO: how to run DB2 queries using async / await - though it might not be needed if querySync gives the
- * same behaviour
  */
 // export const db2Query = (sql: string, callBack: Function) => {
 // export const db2Query = () => {

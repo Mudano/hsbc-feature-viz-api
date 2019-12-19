@@ -79,8 +79,8 @@ const typeDefs = gql`
     id: String
     agreedDependencies: [String]
     primaryFeature: String
-    group: String
-    colour: String
+    group: String # colour
+    size: String # budget
   }
 
   type BubbleLink {

@@ -109,7 +109,7 @@ const rowsToFeatures = (row: Feature): Feature => {
  * @param feature
  */
 export const rowsToQuad = (row: Feature): QuadData => {
-  console.log('rowsToQuad', row)
+  // console.log('rowsToQuad', row)
   return {
     id: row.id,
     xCat: row.xCat,
@@ -234,15 +234,18 @@ export const featuresToTimeline = (
  * @param {Feature} record
  */
 export const featureGraphToBubble = (row: any) => {
-  row['inferred_dependencies'] = []
   row['agreedDependencies'] = []
   return {
     node: {
       id: row.id,
       agreedDependencies: row.agreedDependencies,
-      primaryFeature: row.primaryFeature,
-      group: row.colour,
-      size: row.budget
+      // TODO map the correct types for bolean here
+      // primaryFeature: row.primaryFeature,
+      primaryFeature: 'true',
+      group: '1',
+      size: '3'
+      // group: row.colour,
+      // size: row.budget
     },
     // @ts-ignore
     link: row.agreedDependencies.map(dep => ({

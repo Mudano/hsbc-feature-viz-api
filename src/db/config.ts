@@ -8,11 +8,11 @@ export const db2Pool = require('ibm_db').Pool // For connection pooling
 
 export const db2ConnectionString = (function() {
   return `
-    DATABASE=${process.env['DB2_DATABASE']}
-    UID=${process.env['DB2_USER']}
-    PWD=${process.env['DB2_PASSWORD']}
-    HOSTNAME=${process.env['DB2_HOSTNAME']}
-    PORT=${process.env['DB2_PORT']}
+    DATABASE=${process.env['DB2_DATABASE']};
+    UID=${process.env['DB2_USER']};
+    PWD=${process.env['DB2_PASSWORD']};
+    HOSTNAME=${process.env['DB2_HOSTNAME']};
+    PORT=${process.env['DB2_PORT']};
     PROTOCOL=${process.env['DB2_PROTOCOL'] || 'TCPIP'}
   `.replace(/\s/g, '')
 })()

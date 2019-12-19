@@ -126,7 +126,7 @@ export const db2Query = () => {
  */
 export async function pgQuery(): Promise<any> {
   const results = await pgDb.any(pgSelectAllFeatureGraphSQL)
-  console.log(results.length, 'results returned')
-  console.log('1st result:', results[0])
+  console.log(`💾 [POSTGRES] ${results.length} results returned`)
+  // console.log('1st result:', results[0])
   return sqlRowsToFeatureGraphs(results)
 }

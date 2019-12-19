@@ -129,13 +129,9 @@ export const rowsToQuad = (row: Feature): QuadData => {
  * @param featureGraphs
  */
 //  export const featureGraphToTimeline: TimelineData = (
-export const featuresToTimeline = (
-  featureGraphName: string,
-  featureGraphs: Feature[]
-) => {
-  const newTimelineData = featureGraphs.filter(
-    e => e.featureName === featureGraphName
-  )
+// export const baseToTimeline = (value, baseData) => {
+export const featuresToTimeline = (value: string, featureGraphs: Feature[]) => {
+  const newTimelineData = featureGraphs.filter(e => e.featureName === value)
 
   let agreed = newTimelineData.map((e, i) => e.agreedDependencies)
   let inferred = newTimelineData.map((e, i) => e.inferredDependencies)
@@ -157,20 +153,30 @@ export const featuresToTimeline = (
   // let agreedDependencies = featureGraphs.filter((e) => agreed[0].id === e.id)
   // let inferredDependencies = featureGraphs.filter((e) => inferred[0].id === e.id)
 
-  // console.log(this.state.timelineData.data)
-
   //structure
-  //featureName selected
+  //feature selected
   let newStructure = []
   //data is the array of objects
   newStructure.push({
-    label: featureGraphName,
+    label: value,
     data: [
       {
-        label: 'Label 1',
-        type: 'TRIANGLE',
-        customClass: 'agreed',
-        at: new Date('2016-05-01')
+        label: value,
+        type: 'SQUARE',
+        customClass: 'g1',
+        at: new Date('2016-5-1')
+      },
+      {
+        label: value,
+        type: 'POINT',
+        customClass: 'r4',
+        at: new Date('2016-8-5')
+      },
+      {
+        label: value,
+        type: 'SQUARE',
+        customClass: 'r5',
+        at: new Date('2016-10-30')
       }
     ]
   })
@@ -178,46 +184,66 @@ export const featuresToTimeline = (
   newStructure.push({
     label: 'Market Activation',
     data: [
-      {
-        label: 'Label 1',
-        type: 'TRIANGLE',
-        customClass: 'agreed',
-        at: new Date('2016-05-15')
-      }
+      { type: 'ALPHA', at: new Date('2016-8-10'), label: 'Alpha' },
+      { type: 'BETA', at: new Date('2016-8-20'), label: 'Beta' },
+      { type: 'GOLIVE', at: new Date('2016-8-29'), label: 'Go Live' }
     ]
   })
   //other dependencies
   newStructure.push({ label: 'Other Dependencies', data: [] })
-  // All the dependencies
+  //All the dependencies
   // @ts-ignore
   agreedDependencies.forEach(el => {
     newStructure.push({
-      label: el.featureName,
+      label: el.feature,
       data: [
         {
-          label: 'Label 1',
+          label: el.feature,
+          type: 'SQUARE',
+          customClass: 'agreed',
+          at: new Date('2016-5-1')
+        },
+        {
+          label: el.feature,
+          type: 'POINT',
+          customClass: 'agreed',
+          at: new Date('2016-6-5')
+        },
+        {
+          label: el.feature,
           type: 'TRIANGLE',
           customClass: 'agreed',
-          at: new Date('2016-05-30')
+          at: new Date('2016-7-15')
         }
       ]
     })
     // data structure
     // ask how will we display multiple dependencies if it overflows
-    // how do we get whether a featureName is an epic / story
-    //find how many epics and systems this featureName belongs to and push it to data
+    //how do we get whether a feature is an epic / story
+    //find how many epics and systems this feature belongs to and push it to data
   })
-
   // @ts-ignore
   inferredDependencies.forEach(el => {
     newStructure.push({
-      label: el.featureName,
+      label: el.feature,
       data: [
         {
-          label: 'Label 1',
+          label: el.feature,
           type: 'POINT',
           customClass: 'inferred',
-          at: new Date('2016-10-15')
+          at: new Date('2016-7-17')
+        },
+        {
+          label: el.feature,
+          type: 'SQUARE',
+          customClass: 'inferred',
+          at: new Date('2016-8-18')
+        },
+        {
+          label: el.feature,
+          type: 'TRIANGLE',
+          customClass: 'inferred',
+          at: new Date('2016-9-1')
         }
       ]
     })

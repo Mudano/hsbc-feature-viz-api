@@ -13,44 +13,6 @@ const pgSelectAllFeatureGraphSQL = `
     prototyping.jira_viz_dummy
 `
 
-const db2Sql = `
-  SELECT * FROM table;
-`
-
-const sqliteSelectAllIssuesSql = `
-  SELECT
-    *
-  FROM
-    jira_issues_with_dep;
-`
-
-const sqliteSelectAllDependenciesSql = `
-  SELECT 
-    * 
-  FROM
-    jira_issues;
-`
-const sqliteFeatureGraphsSql = `
-  SELECT
-    x AS id,
-    x AS featureName,
-    x AS x_cat,
-    x AS y_cat,
-    x AS rag_status,
-    x AS r_cat,
-    x AS epic,
-    x AS system,
-    x AS market,
-    x AS cluster,
-    x AS cross_functional_team,
-    x AS pod,
-    x AS due_date
-  FROM
-    features
-  JOIN 
-    
-`
-
 /**
  * SQLITE FUNCTIONS
  * https://github.com/kriasoft/node-sqlite
@@ -67,33 +29,6 @@ export const sqliteQuery = async (sql: string) => {
 }
 
 /**
- * Query multiple tables and join results
- */
-// export const queryAndJoin = async () => {
-//   try {
-//     const issuesWithDep = await sqliteQuery(sqliteSelectAllIssuesSql)
-//     const allIssues = await sqliteQuery(sqliteSelectAllDependenciesSql)
-//     // @ts-ignore
-//     return issuesWithDep.map(i => {
-//       return {
-//         ...i,
-//         // @ts-ignore
-//         dependencies: allIssues.filter(ai => ai.issuekey === i.don_story)
-//       }
-//     })
-//   } catch (error) {
-//     console.error(`💾 [sqlite] quer error:`, error)
-//   }
-// }
-export const queryAndJoin = async () => {
-  try {
-    const featureGraphs = await sqliteQuery(sqliteFeatureGraphsSql)
-  } catch (error) {
-    console.error(`💾 [sqlite] quer error:`, error)
-  }
-}
-
-/**
  * DB2 FUNCTIONS
  * https://github.com/ibmdb/node-ibm_db/
  *
@@ -104,18 +39,18 @@ export const queryAndJoin = async () => {
  * same behaviour
  */
 // export const db2Query = (sql: string, callBack: Function) => {
-export const db2Query = () => {
-  let result
-  db2Pool.open(db2ConnectionString, (err: any, conn: any) => {
-    if (err) return console.error(`💾 [DB2] connection error:`, err)
-    try {
-      result = conn.querySync(db2Sql)
-    } catch (error) {
-      console.error(`💾 [DB2] query error:`, err)
-    }
-  })
-  return result
-}
+// export const db2Query = () => {
+//   let result
+//   db2Pool.open(db2ConnectionString, (err: any, conn: any) => {
+//     if (err) return console.error(`💾 [DB2] connection error:`, err)
+//     try {
+//       result = conn.querySync(db2Sql)
+//     } catch (error) {
+//       console.error(`💾 [DB2] query error:`, err)
+//     }
+//   })
+//   return result
+// }
 
 /**
  * POSTGRES FUNCTIONS

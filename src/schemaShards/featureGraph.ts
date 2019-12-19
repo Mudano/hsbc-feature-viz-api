@@ -1,4 +1,4 @@
-import { pgQuery, queryAndJoin } from '../db'
+import { pgQuery } from '../db'
 import { gql } from 'apollo-server'
 import { GraphQLScalarType } from 'graphql'
 import { Kind } from 'graphql/language'
@@ -119,11 +119,7 @@ const typeDefs = gql`
 export default {
   resolvers: {
     Query: {
-      featureGraphs: async () => await pgQuery(),
-      testIssues: async () => await queryAndJoin()
-      // bubbleFeatures: async () => bubbleFeatures(),
-      // quadFeatures: async () => quadFeatures(),
-      // timelineFeatures: async () => timelineFeatures()
+      featureGraphs: async () => await pgQuery()
     },
     // using the implementation from the docs
     // https://www.apollographql.com/docs/graphql-tools/scalars/#date-as-a-scalar

@@ -31,7 +31,7 @@ export const mergeRawSchemas = (
  * Given multiple queries, join them to give a Feature with its dependencies
  * @param mainQueryResult
  */
-export const joinQuerys = (features: any, dependencies: any): Feature[] => {
+export const joinQuerys = (features: any, agreed_deps: any): Feature[] => {
   return features.map((feature: any) => ({
     id: feature.id,
     featureName: feature.feature_name,
@@ -42,11 +42,11 @@ export const joinQuerys = (features: any, dependencies: any): Feature[] => {
     crossFunctionalTeam: feature.cross_functional_team,
     pod: feature.pod,
     // this is assuming there is a dependency join table
-    agreedDependencies: dependencies
+    agreedDependencies: agreed_deps
       .filter((d: any) => d.source === feature.id)
       .map((d: any) => parseInt(d.target)),
     // agreedDependencies: ['1', '2'],
-    inferredDependencies: dependencies.inferred_dependencies,
+    inferredDependencies: agreed_deps.inferred_dependencies,
     users: feature.users,
     dueDate: feature.due_date,
     primaryFeature: true,
@@ -54,8 +54,8 @@ export const joinQuerys = (features: any, dependencies: any): Feature[] => {
     yCat: feature.y_cat,
     ragStatus: feature.rag_status,
     rCat: feature.r_cat,
-    colour: feature.colour,
-    budget: feature.budget
+    group: feature.group,
+    size: feature.size
   }))
 }
 
@@ -66,42 +66,12 @@ export const joinQuerys = (features: any, dependencies: any): Feature[] => {
  */
 export const sqlRowsToFeatureGraphs = (rows: Feature[]): FeatureGraphs => {
   return {
-    features: rows.map(rowsToFeatures),
+    features: rows,
     bubbleFeatures: featuresToBubble(rows),
     quadFeatures: rows.map(rowsToQuad),
     // TODO: currently hardcoded to start on `Bubble Viz` - need decision as to what to show initially
     // or just to show empty state?
     timelineFeatures: featuresToTimeline('Bubble Viz', rows)
-  }
-}
-
-/**
- * Given a row from a sql query return a Feature object
- *
- * @param feature
- */
-const rowsToFeatures = (row: Feature): Feature => {
-  return {
-    id: row.id,
-    featureName: row.featureName,
-    epic: row.epic,
-    system: row.system,
-    market: row.market,
-    cluster: row.cluster,
-    crossFunctionalTeam: row.crossFunctionalTeam,
-    pod: row.pod,
-    agreedDependencies: row.agreedDependencies,
-    // inferredDependencies: row.inferred_dependencies,
-    inferredDependencies: [],
-    users: row.users,
-    dueDate: row.dueDate,
-    primaryFeature: row.primaryFeature,
-    xCat: row.xCat,
-    yCat: row.yCat,
-    ragStatus: row.ragStatus,
-    rCat: row.rCat,
-    colour: row.colour,
-    budget: row.budget
   }
 }
 

@@ -7,17 +7,6 @@ const typeDefs = gql`
   scalar Date
   extend type Query {
     featureGraphs: FeatureGraphs!
-    # featureGraph(id: ID!): Feature
-    testIssues: [TestIssue]
-  }
-
-  type TestIssue {
-    issuekey: String
-    title: String
-    description: String
-    storypoint: String
-    project: String
-    dependencies: [TestIssue]
   }
 
   # these are not required by the front end, apart from the filters,
@@ -32,9 +21,7 @@ const typeDefs = gql`
     crossFunctionalTeam: String
     pod: String
     agreedDependencies: [Int]
-    # agreedDependencies: Feature[]
-    inferredDependencies: [String]
-    # inferredDependencies: Feature[]
+    inferredDependencies: [Int]
     users: [String]
     # users: User[]
     dueDate: Date
@@ -45,8 +32,8 @@ const typeDefs = gql`
     ragStatus: String
     rCat: String
     # BubbleData Fields
-    colour: String
-    budget: String
+    group: Int # colour
+    size: Int # budget
   }
 
   type FeatureGraphs {

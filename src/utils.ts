@@ -69,6 +69,8 @@ export const sqlRowsToFeatureGraphs = (rows: Feature[]): FeatureGraphs => {
     features: rows.map(rowsToFeatures),
     bubbleFeatures: featuresToBubble(rows),
     quadFeatures: rows.map(rowsToQuad),
+    // TODO: currently hardcoded to start on `Bubble Viz` - need decision as to what to show initially
+    // or just to show empty state?
     timelineFeatures: featuresToTimeline('Bubble Viz', rows)
   }
 }
@@ -123,40 +125,44 @@ export const rowsToQuad = (row: Feature): QuadData => {
 
 /**
  * Given a list of Features and a Feature name, return
- * TODO: this needs a big refactor. inefficnet, unclear and some hardwired data
+ * TODO: REFACTOR
+ * TODO: The shape of the data probably needs to change
+ *  suggested new data structure:
+ *  {
+ *    highlightedFeature: [
  *
- * @param featureGraphName
- * @param featureGraphs
+ *    ],
+ *    marketActivation: [
+ *
+ *    ],
+ *    dependencies: [
+ *
+ *    ]
+ *  }
+ *
+ * TODO: This is currently hardcoded - it needs to be made dynamic
+ * MDs questions:
+ *    - how will multiple dependencies be shown if the list extends past the height of the page?
+ *    - what will indicate if a feature is an epic or a story?
+ *    -
  */
-//  export const featureGraphToTimeline: TimelineData = (
-// export const baseToTimeline = (value, baseData) => {
-export const featuresToTimeline = (value: string, featureGraphs: Feature[]) => {
-  const newTimelineData = featureGraphs.filter(e => e.featureName === value)
+//  export const featuresToTimeline = (value: string, features: Feature[]): TimelineData => {
+export const featuresToTimeline = (value: string, features: Feature[]) => {
+  const newTimelineData = features.filter(e => e.featureName === value)
 
-  let agreed = newTimelineData.map((e, i) => e.agreedDependencies)
-  let inferred = newTimelineData.map((e, i) => e.inferredDependencies)
-  // let allDep = [...agreed[0], ...inferred[0]]
+  const agreed = newTimelineData.map(e => e.agreedDependencies)
+  const inferred: any = [[7, 5, 3]]
 
-  // @ts-ignore
-  let agreedDependencies = []
-
-  // featureGraphs.length > 0 ?
-  // featureGraphs.filter(e => agreed[0].includes(e.id)) :
-  // []
+  console.log('agreed:', agreed)
 
   // @ts-ignore
-  let inferredDependencies = []
-  // featureGraphs.length > 0 ?
-  //   featureGraphs.filter(e => inferred[0].includes(e.id)) :
-  //   []
+  const agreedDependencies = features.filter(e => agreed[0].includes(e.id))
 
-  // let agreedDependencies = featureGraphs.filter((e) => agreed[0].id === e.id)
-  // let inferredDependencies = featureGraphs.filter((e) => inferred[0].id === e.id)
+  // @ts-ignore
+  const inferredDependencies = features.filter(e => inferred[0].includes(e.id))
 
-  //structure
-  //feature selected
   let newStructure = []
-  //data is the array of objects
+
   newStructure.push({
     label: value,
     data: [
@@ -180,7 +186,7 @@ export const featuresToTimeline = (value: string, featureGraphs: Feature[]) => {
       }
     ]
   })
-  //market activation??
+  // market activation??
   newStructure.push({
     label: 'Market Activation',
     data: [
@@ -189,65 +195,60 @@ export const featuresToTimeline = (value: string, featureGraphs: Feature[]) => {
       { type: 'GOLIVE', at: new Date('2016-8-29'), label: 'Go Live' }
     ]
   })
-  //other dependencies
+  // other dependencies
   newStructure.push({ label: 'Other Dependencies', data: [] })
-  //All the dependencies
+  // All the dependencies
   // @ts-ignore
   agreedDependencies.forEach(el => {
     newStructure.push({
-      label: el.feature,
+      label: el.featureName,
       data: [
         {
-          label: el.feature,
+          label: el.featureName,
           type: 'SQUARE',
           customClass: 'agreed',
           at: new Date('2016-5-1')
         },
         {
-          label: el.feature,
+          label: el.featureName,
           type: 'POINT',
           customClass: 'agreed',
           at: new Date('2016-6-5')
         },
         {
-          label: el.feature,
+          label: el.featureName,
           type: 'TRIANGLE',
           customClass: 'agreed',
           at: new Date('2016-7-15')
         }
       ]
     })
-    // data structure
-    // ask how will we display multiple dependencies if it overflows
-    //how do we get whether a feature is an epic / story
-    //find how many epics and systems this feature belongs to and push it to data
   })
   // @ts-ignore
   inferredDependencies.forEach(el => {
     newStructure.push({
-      label: el.feature,
+      label: el.featureName,
       data: [
         {
-          label: el.feature,
+          label: el.featureName,
           type: 'POINT',
           customClass: 'inferred',
           at: new Date('2016-7-17')
         },
         {
-          label: el.feature,
+          label: el.featureName,
           type: 'SQUARE',
           customClass: 'inferred',
           at: new Date('2016-8-18')
         },
         {
-          label: el.feature,
+          label: el.featureName,
           type: 'TRIANGLE',
           customClass: 'inferred',
           at: new Date('2016-9-1')
         }
       ]
     })
-    // data structure
   })
   // console.log('timeline new structure:', newStructure)
 

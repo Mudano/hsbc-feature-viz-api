@@ -1,7 +1,14 @@
 import { pgDb, sqliteDb } from './config'
 import { db2ConnectionString, db2Pool } from './config'
 import { Feature } from '../__typedefs/graphql'
-import { sqlRowsToFeatureGraphs, joinQuerys } from '../utils'
+import { sqlRowsToFeatureGraphs, joinQuerys, filters } from '../utils'
+
+/**
+ * Given a CamelCase string, return the string in snake_case
+ * @param str
+ */
+const camelToSnakeCase = (str: string) =>
+  str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)
 
 /**
  * SQL queries
@@ -19,6 +26,21 @@ const pgSelectAllDeps = `
   FROM
     prototyping.agreed_dependencies
 `
+
+// const constructWhere = (item) => `WHERE ${field} = ${value}`
+const constructWhere = (filter: any) => {
+  const wheres = Object.keys(filter).map(
+    key => `${camelToSnakeCase(key)} = '${filter[key]}'`
+  )
+  return wheres.join(' AND ')
+}
+
+const selectAllWhere = (filter: any) => {
+  const where = constructWhere(filter)
+  console.log('where', where)
+  if (where) return `${pgSelectAllFeatures} WHERE ${where}`
+  return pgSelectAllFeatures
+}
 
 /**
  * SQLITE FUNCTIONS
@@ -64,8 +86,8 @@ export const sqliteQuery = async (sql: string) => {
 /**
  * Return a list of FeatureGraph objects
  */
-export async function pgQuery(): Promise<any> {
-  const features = await pgDb.any(pgSelectAllFeatures)
+export async function pgQuery(filter: any): Promise<any> {
+  const features = await pgDb.any(selectAllWhere(filter))
   const dependencies = await pgDb.any(pgSelectAllDeps)
   // console.log(dependencies)
   console.log(`💾 [POSTGRES] ${features.length} features returned`)

@@ -2,12 +2,40 @@ import { pgQuery } from '../db'
 import { gql } from 'apollo-server'
 import { GraphQLScalarType } from 'graphql'
 import { Kind } from 'graphql/language'
+import { filters } from '../utils'
 
 const typeDefs = gql`
   scalar Date
   extend type Query {
-    featureGraphs: FeatureGraphs!
+    featureGraphs(filter: FeatureGraphFilterInput): FeatureGraphs!
+    filters: Filters
   }
+
+  input FeatureGraphFilterInput {
+    featureName: String
+    market: String
+    cluster: String
+    crossFunctionalTeam: String
+    pod: String
+    # featureName: StringFilterInput
+    # market: StringFilterInput
+    # cluster: StringFilterInput
+    # crossFunctionalTeam: StringFilterInput
+    # pod: StringFilterInput
+  }
+
+  # input StringFilterInput {
+  #   ne: String
+  #   eq: String
+  #   le: String
+  #   lt: String
+  #   ge: String
+  #   gt: String
+  #   contains: String
+  #   notContains: String
+  #   between: [String]
+  #   beginsWith: String
+  # }
 
   # these are not required by the front end, apart from the filters,
   # but they are requird when filtering and return the list of graphDatas
@@ -102,11 +130,38 @@ const typeDefs = gql`
     label: String
     data: [_TimelineData]
   }
+
+  type Filter {
+    name: String
+    label: String
+    options: [String]
+  }
+
+  type Filters {
+    epic: [String]
+    system: [String]
+    user: [String]
+    feature: Filter
+    market: Filter
+    cluster: Filter
+    crossFunctionalTeam: Filter
+    pod: Filter
+    ragStatus: Filter
+  }
 `
 export default {
   resolvers: {
     Query: {
-      featureGraphs: async () => await pgQuery()
+      // featureGraphs: async () => await pgQuery(),
+      // @ts-ignore
+      // featureGraphs: async (parent, args, context, filter) => {
+      featureGraphs: async (_, { filter }) => {
+        // items to filter by, to be used to construct WHERE on query
+        // const { featureName, market, cluster, crossFunctionalTeam, pod } = filter
+        console.log('filters: ', filter)
+        return await pgQuery(filter)
+      },
+      filters: () => filters()
     },
     // using the implementation from the docs
     // https://www.apollographql.com/docs/graphql-tools/scalars/#date-as-a-scalar

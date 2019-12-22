@@ -264,3 +264,56 @@ export const featuresToBubble = (features: Feature[]): BubbleData => {
   })
   return { nodes, links }
 }
+
+/**
+ * Return a Filtering object
+ */
+export const filters = () => {
+  return {
+    epic: [],
+    system: [],
+    user: [],
+    feature: {
+      name: 'feature',
+      label: 'Feature',
+      options: [
+        'Quad Viz',
+        'Filters',
+        'Inferred Dependencies',
+        'Timeline Viz',
+        'Side Bars',
+        'Authorisation',
+        'Login',
+        'GraphQL API',
+        'Navigation',
+        'Bubble Viz',
+        'Tableau Dashboards'
+      ]
+    },
+    market: {
+      name: 'market',
+      label: 'Market',
+      options: ['AUS', 'DE', 'FR', 'UK', 'USA']
+    },
+    cluster: {
+      name: 'cluster',
+      label: 'Cluster',
+      options: []
+    },
+    crossFunctionalTeam: {
+      name: 'crossFunctionalTeam',
+      label: 'Cross Functional Team',
+      options: []
+    },
+    pod: {
+      name: 'pod',
+      label: 'Pod',
+      options: ['Data Science', 'Engineering', 'Viz']
+    },
+    ragStatus: {
+      name: 'ragStatus',
+      label: 'Rag status',
+      options: ['A2', 'A3', 'G1', 'R4', 'R5']
+    }
+  }
+}

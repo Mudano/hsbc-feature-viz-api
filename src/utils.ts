@@ -27,35 +27,53 @@ export const mergeRawSchemas = (
   return mergeWith({}, ...schemas, withArraysConcatination)
 }
 
+export const emptyToNull = (value: any) => {
+  if (value === undefined || value === null) return null
+  if (typeof value === 'string' && (value === '' || value.trim() === ''))
+    return null
+  return value
+}
+
+export const nullToEmptyArray = (value: any) => {
+  if (value === undefined || value === null) return []
+  return value
+}
+
+const parseDependencies = (dependencies: any, feature: Feature) => {
+  return (
+    dependencies
+      // double equals - comparing 2 strings
+      .filter((d: any) => d.source == feature.id)
+      .map((d: any) => parseInt(d.target))
+  )
+}
+
 /**
  * Given multiple queries, join them to give a Feature with its dependencies
  * @param mainQueryResult
  */
-export const joinQuerys = (features: any, agreed_deps: any): Feature[] => {
+export const joinQuerys = (features: any, ag?: any): Feature[] => {
   return features.map((feature: any) => ({
-    id: feature.id,
-    featureName: feature.feature_name,
-    epic: feature.epic,
-    system: feature.system,
-    market: feature.market,
-    cluster: feature.cluster,
-    crossFunctionalTeam: feature.cross_functional_team,
-    pod: feature.pod,
+    id: emptyToNull(feature.id),
+    featureName: emptyToNull(feature.feature_name),
+    epic: emptyToNull(feature.epic),
+    system: emptyToNull(feature.system),
+    market: emptyToNull(feature.market),
+    cluster: emptyToNull(feature.cluster),
+    crossFunctionalTeam: emptyToNull(feature.cross_functional_team),
+    pod: emptyToNull(feature.pod),
     // this is assuming there is a dependency join table
-    agreedDependencies: agreed_deps
-      .filter((d: any) => d.source === feature.id)
-      .map((d: any) => parseInt(d.target)),
-    // agreedDependencies: ['1', '2'],
-    inferredDependencies: agreed_deps.inferred_dependencies,
-    users: feature.users,
-    dueDate: feature.due_date,
+    agreedDependencies: parseDependencies(nullToEmptyArray(ag), feature),
+    inferredDependencies: nullToEmptyArray([]),
+    users: nullToEmptyArray([]),
+    dueDate: emptyToNull(feature.due_date),
     primaryFeature: true,
-    xCat: feature.x_cat,
-    yCat: feature.y_cat,
-    ragStatus: feature.rag_status,
-    rCat: feature.r_cat,
-    group: feature.group,
-    size: feature.size
+    xCat: emptyToNull(feature.x_cat),
+    yCat: emptyToNull(feature.y_cat),
+    ragStatus: emptyToNull(feature.rag_status),
+    rCat: emptyToNull(feature.r_cat),
+    group: emptyToNull(feature.group),
+    size: emptyToNull(feature.size)
   }))
 }
 
@@ -93,136 +111,126 @@ export const rowsToQuad = (row: Feature): QuadData => {
   }
 }
 
+const POINT = 'POINT'
+const SQUARE = 'SQUARE'
+const TRIANGLE = 'POINT'
+const AGREED = 'agreed'
+const INFERRED = 'inferred'
+
+const shapeMap = {
+  feature: POINT,
+  epic: SQUARE,
+  story: TRIANGLE
+}
+
 /**
- * Given a list of Features and a Feature name, return
- * TODO: REFACTOR
- * TODO: The shape of the data probably needs to change
- *  suggested new data structure:
- *  {
- *    highlightedFeature: [
+ * Given a list of Features and a Feature name, return a TimelineData object
  *
- *    ],
- *    marketActivation: [
- *
- *    ],
- *    dependencies: [
- *
- *    ]
- *  }
- *
- * TODO: This is currently hardcoded - it needs to be made dynamic
- * MDs questions:
- *    - how will multiple dependencies be shown if the list extends past the height of the page?
- *    - what will indicate if a feature is an epic or a story?
- *    -
+ * TODO: does this mean that timeline needs it's own endpoint?
+ * TODO: halfway through refactor
  */
-//  export const featuresToTimeline = (value: string, features: Feature[]): TimelineData => {
-export const featuresToTimeline = (value: string, features: Feature[]) => {
-  const newTimelineData = features.filter(e => e.featureName === value)
-
-  const agreed = newTimelineData.map(e => e.agreedDependencies)
-  const inferred: any = [[7, 5, 3]]
-
-  console.log('agreed:', agreed)
-
+export const featuresToTimeline = (
+  value: string,
+  features: Feature[]
+): TimelineData => {
+  const highlightedFeature = features.find(e => e.featureName === value)
   // @ts-ignore
-  const agreedDependencies = features.filter(e => agreed[0].includes(e.id))
-
+  const agreed = highlightedFeature.agreedDependencies
   // @ts-ignore
-  const inferredDependencies = features.filter(e => inferred[0].includes(e.id))
+  const inferred: any = highlightedFeature.inferredDependencies
+  // @ts-ignore
+  const agreedDependencies = features.filter(e =>
+    agreed.includes(parseInt(e.id))
+  )
+  // @ts-ignore
+  const inferredDependencies = features.filter(e =>
+    inferred.includes(parseInt(e.id))
+  )
 
-  let newStructure = []
-
-  newStructure.push({
-    label: value,
-    data: [
+  const timelineAgreedDeps = agreedDependencies
+    .map(feature => [
       {
-        label: value,
-        type: 'SQUARE',
-        customClass: 'g1',
-        at: new Date('2016-5-1')
+        label: feature.featureName,
+        type: SQUARE,
+        customClass: AGREED,
+        at: feature.dueDate
       },
       {
-        label: value,
-        type: 'POINT',
-        customClass: 'r4',
-        at: new Date('2016-8-5')
+        label: feature.featureName,
+        type: POINT,
+        customClass: AGREED,
+        at: feature.dueDate
       },
       {
-        label: value,
-        type: 'SQUARE',
-        customClass: 'r5',
-        at: new Date('2016-10-30')
+        label: feature.featureName,
+        type: TRIANGLE,
+        customClass: AGREED,
+        at: feature.dueDate
       }
-    ]
-  })
-  // market activation??
-  newStructure.push({
-    label: 'Market Activation',
-    data: [
-      { type: 'ALPHA', at: new Date('2016-8-10'), label: 'Alpha' },
-      { type: 'BETA', at: new Date('2016-8-20'), label: 'Beta' },
-      { type: 'GOLIVE', at: new Date('2016-8-29'), label: 'Go Live' }
-    ]
-  })
-  // other dependencies
-  newStructure.push({ label: 'Other Dependencies', data: [] })
-  // All the dependencies
-  // @ts-ignore
-  agreedDependencies.forEach(el => {
-    newStructure.push({
-      label: el.featureName,
+    ])
+    .flat()
+
+  const timelineInferredDeps = inferredDependencies
+    .map(feature => [
+      {
+        label: feature.featureName,
+        type: SQUARE,
+        customClass: INFERRED,
+        at: feature.dueDate
+      },
+      {
+        label: feature.featureName,
+        type: POINT,
+        customClass: INFERRED,
+        at: feature.dueDate
+      },
+      {
+        label: feature.featureName,
+        type: TRIANGLE,
+        customClass: INFERRED,
+        at: feature.dueDate
+      }
+    ])
+    .flat()
+
+  return {
+    highlightedFeature: {
+      label: value,
       data: [
         {
-          label: el.featureName,
+          label: value,
           type: 'SQUARE',
-          customClass: 'agreed',
+          customClass: 'g1',
           at: new Date('2016-5-1')
         },
         {
-          label: el.featureName,
+          label: value,
           type: 'POINT',
-          customClass: 'agreed',
-          at: new Date('2016-6-5')
+          customClass: 'r4',
+          at: new Date('2016-8-5')
         },
         {
-          label: el.featureName,
-          type: 'TRIANGLE',
-          customClass: 'agreed',
-          at: new Date('2016-7-15')
-        }
-      ]
-    })
-  })
-  // @ts-ignore
-  inferredDependencies.forEach(el => {
-    newStructure.push({
-      label: el.featureName,
-      data: [
-        {
-          label: el.featureName,
-          type: 'POINT',
-          customClass: 'inferred',
-          at: new Date('2016-7-17')
-        },
-        {
-          label: el.featureName,
+          label: value,
           type: 'SQUARE',
-          customClass: 'inferred',
-          at: new Date('2016-8-18')
-        },
-        {
-          label: el.featureName,
-          type: 'TRIANGLE',
-          customClass: 'inferred',
-          at: new Date('2016-9-1')
+          customClass: 'r5',
+          at: new Date('2016-10-30')
         }
       ]
-    })
-  })
-  // console.log('timeline new structure:', newStructure)
-
-  return newStructure
+    },
+    marketActivation: [
+      // @ts-ignore
+      { type: 'ALPHA', at: highlightedFeature.dueDate.alpha, label: 'Alpha' },
+      // @ts-ignore
+      { type: 'BETA', at: highlightedFeature.dueDate.beta, label: 'Beta' },
+      // @ts-ignore
+      {
+        type: 'GOLIVE',
+        at: highlightedFeature.dueDate.goLive,
+        label: 'Go Live'
+      }
+    ],
+    dependencies: timelineAgreedDeps.concat(timelineInferredDeps)
+  }
 }
 
 /**
@@ -230,12 +238,12 @@ export const featuresToTimeline = (value: string, features: Feature[]) => {
  * required by the D3 Bubble visualisation
  * @param {Feature} record
  */
-export const featureGraphToBubble = (row: any) => {
+export const featureToBubble = (row: any) => {
   return {
     node: {
       id: row.id,
       agreedDependencies: row.agreedDependencies,
-      primaryFeature: true,
+      primaryFeature: row.primaryFeature,
       group: 1,
       size: 3
       // group: row.colour,
@@ -243,7 +251,7 @@ export const featureGraphToBubble = (row: any) => {
     },
     // @ts-ignore
     link: row.agreedDependencies.map(dep => ({
-      source: row.id,
+      source: parseInt(row.id),
       target: dep
     }))
   }
@@ -258,7 +266,7 @@ export const featuresToBubble = (features: Feature[]): BubbleData => {
   const nodes: any[] = []
   let links: any[] = []
   features.forEach(issue => {
-    const { node, link } = featureGraphToBubble(issue)
+    const { node, link } = featureToBubble(issue)
     nodes.push(node)
     links = links.concat(link)
   })
@@ -316,4 +324,25 @@ export const filters = () => {
       options: ['A2', 'A3', 'G1', 'R4', 'R5']
     }
   }
+}
+
+/**
+ * Given a list of Features, return a list of their dependencies,
+ * with primaryFeature set to false, for dimming of opacity in
+ * FeatureGraphs
+ */
+export const filterDependencies = (
+  allFeatures: Feature[],
+  filtered: Feature[]
+) => {
+  return (
+    filtered
+      .map(record => record.agreedDependencies)
+      .flat()
+      // // return unique items
+      .filter((x, i, a) => a.indexOf(x) === i)
+      .map(id => allFeatures.filter(item => item.id == id))
+      .flat()
+      .map(item => ({ ...item, agreedDependencies: [], primaryFeature: false }))
+  )
 }

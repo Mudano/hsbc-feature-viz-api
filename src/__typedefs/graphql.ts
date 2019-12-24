@@ -63,7 +63,7 @@ export type Feature = {
   crossFunctionalTeam?: Maybe<Scalars['String']>
   pod?: Maybe<Scalars['String']>
   agreedDependencies?: Maybe<Array<Maybe<Scalars['Int']>>>
-  inferredDependencies?: Maybe<Array<Maybe<Scalars['String']>>>
+  inferredDependencies?: Maybe<Array<Maybe<Scalars['Int']>>>
   users?: Maybe<Array<Maybe<Scalars['String']>>>
   dueDate?: Maybe<Scalars['Date']>
   primaryFeature?: Maybe<Scalars['Boolean']>
@@ -71,8 +71,16 @@ export type Feature = {
   yCat?: Maybe<Scalars['String']>
   ragStatus?: Maybe<Scalars['String']>
   rCat?: Maybe<Scalars['String']>
-  colour?: Maybe<Scalars['String']>
-  budget?: Maybe<Scalars['String']>
+  group?: Maybe<Scalars['Int']>
+  size?: Maybe<Scalars['Int']>
+}
+
+export type FeatureGraphFilterInput = {
+  featureName?: Maybe<Scalars['String']>
+  market?: Maybe<Scalars['String']>
+  cluster?: Maybe<Scalars['String']>
+  crossFunctionalTeam?: Maybe<Scalars['String']>
+  pod?: Maybe<Scalars['String']>
 }
 
 export type FeatureGraphs = {
@@ -80,7 +88,33 @@ export type FeatureGraphs = {
   features?: Maybe<Array<Maybe<Feature>>>
   bubbleFeatures?: Maybe<BubbleData>
   quadFeatures?: Maybe<Array<Maybe<QuadData>>>
-  timelineFeatures?: Maybe<Array<Maybe<TimelineData>>>
+  timelineFeatures?: Maybe<TimelineData>
+}
+
+export type Filter = {
+  __typename?: 'Filter'
+  name?: Maybe<Scalars['String']>
+  label?: Maybe<Scalars['String']>
+  options?: Maybe<Array<Maybe<Scalars['String']>>>
+}
+
+export type Filters = {
+  __typename?: 'Filters'
+  epic?: Maybe<Array<Maybe<Scalars['String']>>>
+  system?: Maybe<Array<Maybe<Scalars['String']>>>
+  user?: Maybe<Array<Maybe<Scalars['String']>>>
+  feature?: Maybe<Filter>
+  market?: Maybe<Filter>
+  cluster?: Maybe<Filter>
+  crossFunctionalTeam?: Maybe<Filter>
+  pod?: Maybe<Filter>
+  ragStatus?: Maybe<Filter>
+}
+
+export type HighlightedFeature = {
+  __typename?: 'HighlightedFeature'
+  label?: Maybe<Scalars['String']>
+  data?: Maybe<Array<Maybe<TimelineFeature>>>
 }
 
 export type QuadData = {
@@ -98,7 +132,11 @@ export type Query = {
   __typename?: 'Query'
   _empty?: Maybe<Scalars['String']>
   featureGraphs: FeatureGraphs
-  testIssues?: Maybe<Array<Maybe<TestIssue>>>
+  filters?: Maybe<Filters>
+}
+
+export type QueryFeatureGraphsArgs = {
+  filter?: Maybe<FeatureGraphFilterInput>
 }
 
 export type System = {
@@ -109,20 +147,19 @@ export type System = {
   featureCount?: Maybe<Scalars['Int']>
 }
 
-export type TestIssue = {
-  __typename?: 'TestIssue'
-  issuekey?: Maybe<Scalars['String']>
-  title?: Maybe<Scalars['String']>
-  description?: Maybe<Scalars['String']>
-  storypoint?: Maybe<Scalars['String']>
-  project?: Maybe<Scalars['String']>
-  dependencies?: Maybe<Array<Maybe<TestIssue>>>
-}
-
 export type TimelineData = {
   __typename?: 'TimelineData'
+  highlightedFeature?: Maybe<HighlightedFeature>
+  marketActivation?: Maybe<Array<Maybe<TimelineFeature>>>
+  dependencies?: Maybe<Array<Maybe<TimelineFeature>>>
+}
+
+export type TimelineFeature = {
+  __typename?: 'TimelineFeature'
+  type?: Maybe<Scalars['String']>
+  at?: Maybe<Scalars['Date']>
   label?: Maybe<Scalars['String']>
-  data?: Maybe<Array<Maybe<_TimelineData>>>
+  customClass?: Maybe<Scalars['String']>
 }
 
 export type User = {
@@ -236,19 +273,23 @@ export type DirectiveResolverFn<
 export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>
   String: ResolverTypeWrapper<Scalars['String']>
+  FeatureGraphFilterInput: FeatureGraphFilterInput
   FeatureGraphs: ResolverTypeWrapper<FeatureGraphs>
   Feature: ResolverTypeWrapper<Feature>
+  Int: ResolverTypeWrapper<Scalars['Int']>
   Date: ResolverTypeWrapper<Scalars['Date']>
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']>
   BubbleData: ResolverTypeWrapper<BubbleData>
   BubbleNode: ResolverTypeWrapper<BubbleNode>
   BubbleLink: ResolverTypeWrapper<BubbleLink>
   QuadData: ResolverTypeWrapper<QuadData>
   TimelineData: ResolverTypeWrapper<TimelineData>
+  HighlightedFeature: ResolverTypeWrapper<HighlightedFeature>
+  TimelineFeature: ResolverTypeWrapper<TimelineFeature>
+  Filters: ResolverTypeWrapper<Filters>
+  Filter: ResolverTypeWrapper<Filter>
   _TimelineData: ResolverTypeWrapper<_TimelineData>
-  TestIssue: ResolverTypeWrapper<TestIssue>
-  Boolean: ResolverTypeWrapper<Scalars['Boolean']>
   Epic: ResolverTypeWrapper<Epic>
-  Int: ResolverTypeWrapper<Scalars['Int']>
   System: ResolverTypeWrapper<System>
   User: ResolverTypeWrapper<User>
 }
@@ -257,19 +298,23 @@ export type ResolversTypes = {
 export type ResolversParentTypes = {
   Query: {}
   String: Scalars['String']
+  FeatureGraphFilterInput: FeatureGraphFilterInput
   FeatureGraphs: FeatureGraphs
   Feature: Feature
+  Int: Scalars['Int']
   Date: Scalars['Date']
+  Boolean: Scalars['Boolean']
   BubbleData: BubbleData
   BubbleNode: BubbleNode
   BubbleLink: BubbleLink
   QuadData: QuadData
   TimelineData: TimelineData
+  HighlightedFeature: HighlightedFeature
+  TimelineFeature: TimelineFeature
+  Filters: Filters
+  Filter: Filter
   _TimelineData: _TimelineData
-  TestIssue: TestIssue
-  Boolean: Scalars['Boolean']
   Epic: Epic
-  Int: Scalars['Int']
   System: System
   User: User
 }
@@ -376,7 +421,7 @@ export type FeatureResolvers<
     ContextType
   >
   inferredDependencies?: Resolver<
-    Maybe<Array<Maybe<ResolversTypes['String']>>>,
+    Maybe<Array<Maybe<ResolversTypes['Int']>>>,
     ParentType,
     ContextType
   >
@@ -395,8 +440,8 @@ export type FeatureResolvers<
   yCat?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   ragStatus?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   rCat?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
-  colour?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
-  budget?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
+  group?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>
+  size?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>
 }
 
 export type FeatureGraphsResolvers<
@@ -419,7 +464,63 @@ export type FeatureGraphsResolvers<
     ContextType
   >
   timelineFeatures?: Resolver<
-    Maybe<Array<Maybe<ResolversTypes['TimelineData']>>>,
+    Maybe<ResolversTypes['TimelineData']>,
+    ParentType,
+    ContextType
+  >
+}
+
+export type FilterResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['Filter'] = ResolversParentTypes['Filter']
+> = {
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
+  label?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
+  options?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes['String']>>>,
+    ParentType,
+    ContextType
+  >
+}
+
+export type FiltersResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['Filters'] = ResolversParentTypes['Filters']
+> = {
+  epic?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes['String']>>>,
+    ParentType,
+    ContextType
+  >
+  system?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes['String']>>>,
+    ParentType,
+    ContextType
+  >
+  user?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes['String']>>>,
+    ParentType,
+    ContextType
+  >
+  feature?: Resolver<Maybe<ResolversTypes['Filter']>, ParentType, ContextType>
+  market?: Resolver<Maybe<ResolversTypes['Filter']>, ParentType, ContextType>
+  cluster?: Resolver<Maybe<ResolversTypes['Filter']>, ParentType, ContextType>
+  crossFunctionalTeam?: Resolver<
+    Maybe<ResolversTypes['Filter']>,
+    ParentType,
+    ContextType
+  >
+  pod?: Resolver<Maybe<ResolversTypes['Filter']>, ParentType, ContextType>
+  ragStatus?: Resolver<Maybe<ResolversTypes['Filter']>, ParentType, ContextType>
+}
+
+export type HighlightedFeatureResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['HighlightedFeature'] = ResolversParentTypes['HighlightedFeature']
+> = {
+  label?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
+  data?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes['TimelineFeature']>>>,
     ParentType,
     ContextType
   >
@@ -454,13 +555,10 @@ export type QueryResolvers<
   featureGraphs?: Resolver<
     ResolversTypes['FeatureGraphs'],
     ParentType,
-    ContextType
+    ContextType,
+    QueryFeatureGraphsArgs
   >
-  testIssues?: Resolver<
-    Maybe<Array<Maybe<ResolversTypes['TestIssue']>>>,
-    ParentType,
-    ContextType
-  >
+  filters?: Resolver<Maybe<ResolversTypes['Filters']>, ParentType, ContextType>
 }
 
 export type SystemResolvers<
@@ -477,37 +575,36 @@ export type SystemResolvers<
   featureCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>
 }
 
-export type TestIssueResolvers<
+export type TimelineDataResolvers<
   ContextType = any,
-  ParentType extends ResolversParentTypes['TestIssue'] = ResolversParentTypes['TestIssue']
+  ParentType extends ResolversParentTypes['TimelineData'] = ResolversParentTypes['TimelineData']
 > = {
-  issuekey?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
-  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
-  description?: Resolver<
-    Maybe<ResolversTypes['String']>,
+  highlightedFeature?: Resolver<
+    Maybe<ResolversTypes['HighlightedFeature']>,
     ParentType,
     ContextType
   >
-  storypoint?: Resolver<
-    Maybe<ResolversTypes['String']>,
+  marketActivation?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes['TimelineFeature']>>>,
     ParentType,
     ContextType
   >
-  project?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
   dependencies?: Resolver<
-    Maybe<Array<Maybe<ResolversTypes['TestIssue']>>>,
+    Maybe<Array<Maybe<ResolversTypes['TimelineFeature']>>>,
     ParentType,
     ContextType
   >
 }
 
-export type TimelineDataResolvers<
+export type TimelineFeatureResolvers<
   ContextType = any,
-  ParentType extends ResolversParentTypes['TimelineData'] = ResolversParentTypes['TimelineData']
+  ParentType extends ResolversParentTypes['TimelineFeature'] = ResolversParentTypes['TimelineFeature']
 > = {
+  type?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
+  at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>
   label?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>
-  data?: Resolver<
-    Maybe<Array<Maybe<ResolversTypes['_TimelineData']>>>,
+  customClass?: Resolver<
+    Maybe<ResolversTypes['String']>,
     ParentType,
     ContextType
   >
@@ -530,11 +627,14 @@ export type Resolvers<ContextType = any> = {
   Epic?: EpicResolvers<ContextType>
   Feature?: FeatureResolvers<ContextType>
   FeatureGraphs?: FeatureGraphsResolvers<ContextType>
+  Filter?: FilterResolvers<ContextType>
+  Filters?: FiltersResolvers<ContextType>
+  HighlightedFeature?: HighlightedFeatureResolvers<ContextType>
   QuadData?: QuadDataResolvers<ContextType>
   Query?: QueryResolvers<ContextType>
   System?: SystemResolvers<ContextType>
-  TestIssue?: TestIssueResolvers<ContextType>
   TimelineData?: TimelineDataResolvers<ContextType>
+  TimelineFeature?: TimelineFeatureResolvers<ContextType>
   User?: UserResolvers<ContextType>
 }
 

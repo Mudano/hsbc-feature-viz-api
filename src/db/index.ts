@@ -1,7 +1,12 @@
 import { pgDb, sqliteDb } from './config'
 import { db2ConnectionString, db2Pool } from './config'
 import { Feature } from '../__typedefs/graphql'
-import { sqlRowsToFeatureGraphs, joinQuerys, filters } from '../utils'
+import {
+  sqlRowsToFeatureGraphs,
+  joinQuerys,
+  filters,
+  filterDependencies
+} from '../utils'
 
 /**
  * Given a CamelCase string, return the string in snake_case
@@ -35,11 +40,11 @@ const constructWhere = (filter: any) => {
   return wheres.join(' AND ')
 }
 
-const selectAllWhere = (filter: any) => {
+const selectAllWhere = (filter?: any) => {
+  if (!filter) return pgSelectAllFeatures
   const where = constructWhere(filter)
   console.log('where', where)
-  if (where) return `${pgSelectAllFeatures} WHERE ${where}`
-  return pgSelectAllFeatures
+  return `${pgSelectAllFeatures} WHERE ${where}`
 }
 
 /**
@@ -87,12 +92,26 @@ export const sqliteQuery = async (sql: string) => {
  * Return a list of FeatureGraph objects
  */
 export async function pgQuery(filter: any): Promise<any> {
-  const features = await pgDb.any(selectAllWhere(filter))
-  const dependencies = await pgDb.any(pgSelectAllDeps)
-  // console.log(dependencies)
-  console.log(`💾 [POSTGRES] ${features.length} features returned`)
-  console.log(`💾 [POSTGRES] ${dependencies.length} dependencies returned`)
+  console.log('in pgQuery')
+  console.log('filter', filter)
+  const allRaw = await pgDb.any(pgSelectAllFeatures)
+  const filteredFeatures = await pgDb.any(selectAllWhere(filter))
+  const agreedDependencies = await pgDb.any(pgSelectAllDeps)
 
-  const joined = joinQuerys(features, dependencies)
-  return sqlRowsToFeatureGraphs(joined)
+  // console.log(agreedDependencies)
+  console.log(
+    `💾 [POSTGRES] ${filteredFeatures.length} filteredFeatures returned`
+  )
+  console.log(
+    `💾 [POSTGRES] ${agreedDependencies.length} agreedDependencies returned`
+  )
+
+  // join various queries together
+  const joined = joinQuerys(filteredFeatures, agreedDependencies)
+
+  // only filterDependencies there is a filter present
+  if (!filter) return sqlRowsToFeatureGraphs(joined)
+  const all = joinQuerys(allRaw)
+  const dependencies = filterDependencies(all, joined)
+  return sqlRowsToFeatureGraphs(joined.concat(dependencies))
 }

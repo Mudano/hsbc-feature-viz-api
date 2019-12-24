@@ -68,7 +68,7 @@ const typeDefs = gql`
     features: [Feature]
     bubbleFeatures: BubbleData
     quadFeatures: [QuadData]
-    timelineFeatures: [TimelineData]
+    timelineFeatures: TimelineData
   }
 
   type User {
@@ -126,9 +126,22 @@ const typeDefs = gql`
     at: Date
   }
 
-  type TimelineData {
+  type TimelineFeature {
+    type: String
+    at: Date
     label: String
-    data: [_TimelineData]
+    customClass: String
+  }
+
+  type HighlightedFeature {
+    label: String
+    data: [TimelineFeature]
+  }
+
+  type TimelineData {
+    highlightedFeature: HighlightedFeature
+    marketActivation: [TimelineFeature]
+    dependencies: [TimelineFeature]
   }
 
   type Filter {

@@ -2,6 +2,11 @@
 
 ## Development
 
+### Current point of development
+
+- featuresToTimeline function in utils.ts is halfway refactored - this needs finishing to produce dynamic data - it was hardwired before. A new structure has been implemented which can be seen in the type definitions in `db/schemaShards/featureGraph.ts`
+- unit tests are mostly written
+
 ### Environment Variables & DB connection
 
 This repo contains connectors for PostgresQL (via pg-promise), SQLite and DB2.

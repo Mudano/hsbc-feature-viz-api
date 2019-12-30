@@ -73,23 +73,23 @@ const expectedQuadFeatures: any = [
 ]
 const expectedTimelineFeatures: any = []
 
-describe('utils', () => {
-  it('joinQuerys returns the correct Feature[]', () => {
-    const dependencies: any = [
-      { source: 1, target: 2, id: 1 },
-      { source: 1, target: 4, id: 1 },
-      { source: 1, target: 3, id: 1 }
-    ]
-    const actual = joinQuerys(rawRowsFromSql, dependencies)
-    expect(actual).toEqual(expectedFeatures)
-  }),
-    it('sqlRowsToFeatureGraphs returns a FeatureGraphs object', () => {
-      const expected = {
-        features: expectedFeatures,
-        bubbleFeatures: expectedBubbleFeatures,
-        quadFeatures: expectedQuadFeatures,
-        timelineFeatures: expectedTimelineFeatures
-      }
-      expect(sqlRowsToFeatureGraphs(expectedFeatures)).toEqual(expected)
-    })
+// describe('utils', () => {
+it('joinQuerys returns the correct Feature[]', () => {
+  const dependencies: any = [
+    { source: 1, target: 2, id: 1 },
+    { source: 1, target: 4, id: 1 },
+    { source: 1, target: 3, id: 1 }
+  ]
+  const actual = joinQuerys(rawRowsFromSql, dependencies)
+  expect(actual).toEqual(expectedFeatures)
 })
+it('sqlRowsToFeatureGraphs returns a FeatureGraphs object', () => {
+  const expected = {
+    features: expectedFeatures,
+    bubbleFeatures: expectedBubbleFeatures,
+    quadFeatures: expectedQuadFeatures,
+    timelineFeatures: expectedTimelineFeatures
+  }
+  expect(sqlRowsToFeatureGraphs(expectedFeatures)).toEqual(expected)
+})
+// })

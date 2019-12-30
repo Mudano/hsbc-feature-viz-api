@@ -26,7 +26,11 @@ export const mergeRawSchemas = (
 ): IExecutableSchemaDefinition => {
   return mergeWith({}, ...schemas, withArraysConcatination)
 }
-
+/**
+ * Given an empty value, or undefined, return null. Return the value if
+ * not empty
+ * @param value
+ */
 export const emptyToNull = (value: any) => {
   if (value === undefined || value === null) return null
   if (typeof value === 'string' && (value === '' || value.trim() === ''))
@@ -34,6 +38,11 @@ export const emptyToNull = (value: any) => {
   return value
 }
 
+/**
+ * Given a null value, return an empty array. Return the value if not
+ * null
+ * @param value
+ */
 export const nullToEmptyArray = (value: any) => {
   if (value === undefined || value === null) return []
   return value
@@ -198,24 +207,28 @@ export const featuresToTimeline = (
   return {
     highlightedFeature: {
       label: value,
+      // TODO: in the dummy data, the square, point
       data: [
         {
           label: value,
           type: 'SQUARE',
           customClass: 'g1',
-          at: new Date('2016-5-1')
+          // @ts-ignore
+          at: highlightedFeature.dueDate
         },
         {
           label: value,
           type: 'POINT',
           customClass: 'r4',
-          at: new Date('2016-8-5')
+          // @ts-ignore
+          at: highlightedFeature.dueDate
         },
         {
           label: value,
           type: 'SQUARE',
           customClass: 'r5',
-          at: new Date('2016-10-30')
+          // @ts-ignore
+          at: highlightedFeature.dueDate
         }
       ]
     },

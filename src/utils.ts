@@ -133,17 +133,19 @@ export const featuresToTimeline = (
   value: string,
   features: Feature[]
 ): TimelineData => {
-  const highlightedFeature = features.find(e => e.featureName === value)
+  const highlightedFeature = features.find(
+    ({ featureName }) => featureName === value
+  )
   // @ts-ignore
   const agreed = highlightedFeature.agreedDependencies
   // @ts-ignore
   const inferred: any = highlightedFeature.inferredDependencies
-  // @ts-ignore
   const agreedDependencies = features.filter(e =>
+    // @ts-ignore
     agreed.includes(parseInt(e.id))
   )
-  // @ts-ignore
   const inferredDependencies = features.filter(e =>
+    // @ts-ignore
     inferred.includes(parseInt(e.id))
   )
 
@@ -222,9 +224,9 @@ export const featuresToTimeline = (
       { type: 'ALPHA', at: highlightedFeature.dueDate.alpha, label: 'Alpha' },
       // @ts-ignore
       { type: 'BETA', at: highlightedFeature.dueDate.beta, label: 'Beta' },
-      // @ts-ignore
       {
         type: 'GOLIVE',
+        // @ts-ignore
         at: highlightedFeature.dueDate.goLive,
         label: 'Go Live'
       }

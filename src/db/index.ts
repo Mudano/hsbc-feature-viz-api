@@ -99,6 +99,7 @@ export async function pgQuery(filter: any): Promise<any> {
   const agreedDependencies = await pgDb.any(pgSelectAllDeps)
 
   // console.log(agreedDependencies)
+  console.log(`💾 [POSTGRES] ${allRaw.length} allRaw returned`)
   console.log(
     `💾 [POSTGRES] ${filteredFeatures.length} filteredFeatures returned`
   )
